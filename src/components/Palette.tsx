@@ -5,6 +5,7 @@ import * as jsPlumb from './../../node_modules/jsplumb';
 import {jsPlumbInstance} from "jsplumb";
 import {ReactElement} from "react";
 
+import * as MapEditorActions from '../actions/MapEditorActions';
 
 interface IPaletteComponent {
     id: number;
@@ -21,7 +22,7 @@ export interface IProps {
     jsPlumbInstance: jsPlumbInstance
 }
 
-export default class Canvas extends React.Component<IProps, object> {
+export default class Palette extends React.Component<IProps, object> {
 
     private components: IPaletteComponents;
     private jsPlumbInstance: jsPlumbInstance;
@@ -56,7 +57,13 @@ export default class Canvas extends React.Component<IProps, object> {
             grid: [
                 '10', '10'
             ],
-            ignoreZoom: true
+            ignoreZoom: true,
+            start : () => {
+                MapEditorActions.startDrag();
+            },
+            stop : () => {
+                MapEditorActions.stopDrag();
+            }
         } as jsPlumb.DragOptions);
         return d;
     }

@@ -5,6 +5,7 @@ import Palette, {IPaletteComponents} from './components/Palette';
 import logo from './logo.svg';
 
 import * as jsPlumb from "jsplumb";
+import MapCanvas from "./components/MapCanvas";
 
 
 const params: IPaletteComponents = [
@@ -58,7 +59,7 @@ class App extends React.Component {
                 </header>
                 <div style={{display: 'flex', flex: "1 1 auto",}}>
                     <Palette components={params} jsPlumbInstance={jsPlumbInstance}/>
-                    <div style={{background: 'red', flex: '1 1 auto', minHeight: 500, minWidth: 600}}>blah</div>
+                    <MapCanvas jsPlumbInstance={jsPlumbInstance}/>
                 </div>
             </div>
         );
