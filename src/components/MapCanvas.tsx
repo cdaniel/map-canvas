@@ -137,7 +137,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             realCanvasDivStyle = _.extend(realCanvasDivStyle, {
                 border: '1px solid #00789b',
                 borderColor: "#00789b",
-                boxShadow: "0 0 10px #00789b",
+                boxShadow: "0 0 10px 3px #00789b",
             });
         }
         return (
