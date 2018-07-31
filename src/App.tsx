@@ -41,15 +41,15 @@ const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 class App extends React.Component {
   public render() {
     return (
-      <div className="App">
-        <header className="App-header">
+      <div style={{display:'flex',height:'100%', flexFlow:'column'}}>
+        <header className="App-header" style={{flex:"0 1 auto"}}>
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-          <Canvas  components={params} jsPlumbInstance={jsPlumbInstance}/>
+          <div style={{display:'flex', flex:"1 1 auto",}}>
+              <Canvas components={params} jsPlumbInstance={jsPlumbInstance}/>
+              <div style={{background:'red', flex:'1 1 auto', minHeight:500, minWidth:600}}>blah</div>
+          </div>
       </div>
     );
   }

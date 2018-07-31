@@ -64,7 +64,7 @@ export default class Canvas extends React.Component<IProps, object> {
     public render() {
         const renderedComponents = this.renderComponents(this.components);
         return (
-            <div style={{width:170, borderWidth: 1, borderColor: 'gray', borderStyle:'dotted'}}>
+            <div style={{width:170, borderWidth: 1, borderColor: 'gray', borderStyle:'dotted', minWidth:170}}>
                 <div style={{marginLeft: 10,}}>
                      {renderedComponents}
                 </div>
