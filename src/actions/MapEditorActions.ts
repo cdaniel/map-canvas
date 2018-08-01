@@ -11,10 +11,10 @@ export function startDrag() {
     MapEditorDispatcher.dispatch(new DragStartedEvent(null));
 }
 
-export function stopDrag() {
-    MapEditorDispatcher.dispatch(new DragStoppedEvent(null));
+export function stopDrag(type:string, params:any) {
+    MapEditorDispatcher.dispatch(new DragStoppedEvent({type, params}));
 }
 
-export function resize(width: number, height: number) {
-    MapEditorDispatcher.dispatch(new MapResizeEvent({height, width}));
+export function resize(width: number, height: number, input:HTMLDivElement|null) {
+    MapEditorDispatcher.dispatch(new MapResizeEvent({height, width, input}));
 }

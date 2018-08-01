@@ -5,7 +5,10 @@ import * as jsPlumb from './../../node_modules/jsplumb';
 import {jsPlumbInstance} from "jsplumb";
 import {ReactElement} from "react";
 
+import * as MapActions from '../actions/MapActions';
 import * as MapEditorActions from '../actions/MapEditorActions';
+
+import MapEditorStore from '../stores/MapEditorStore';
 
 interface IPaletteComponent {
     id: number;
@@ -38,8 +41,12 @@ export default class Palette extends React.Component<IProps, object> {
         const style = component.visualElement.props.style;
         if(style){
             style.cssFloat = 'left';
-            style.height = '20px';
-            style.width = '20px';
+            if(!style.height){
+                style.height = '20px';
+            }
+            if(!style.width) {
+                style.width = '20px';
+            }
         }
         return <div ref={this.makeDraggable.bind(this, key)} key={key} style={{margin: 10}}>
             <div>{component.visualElement}</div>
@@ -61,8 +68,13 @@ export default class Palette extends React.Component<IProps, object> {
             start : () => {
                 MapEditorActions.startDrag();
             },
-            stop : () => {
-                MapEditorActions.stopDrag();
+            stop : (params : any ) => {
+                MapEditorActions.stopDrag(type, params);
+                // if the drop is on the map canvas
+                if(MapEditorStore.verifyTarget(params)){
+                    const coords = MapEditorStore.normalizeCoord(params);
+                    MapActions.initiateNewNodeCreationProcess(type, coords);
+                }
             }
         } as jsPlumb.DragOptions);
         return d;
@@ -85,6 +97,7 @@ export default class Palette extends React.Component<IProps, object> {
                 borderColor: 'gray',
                 borderStyle: 'dotted',
                 borderWidth: 1,
+                fontSize: 'smaller',
                 margin: 3,
                 minWidth: 170,
                 width: 170

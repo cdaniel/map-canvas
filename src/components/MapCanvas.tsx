@@ -7,9 +7,12 @@ import ReactResizeDetector from 'react-resize-detector';
 import {jsPlumbInstance} from "jsplumb";
 import MapEditorState from "../types/MapEditorState";
 
+import MapStore from '../stores/MapStore';
+
 import * as MapEditorActions from '../actions/MapEditorActions';
 import MapEditorStore from '../stores/MapEditorStore';
 
+import Node from './Node';
 
 const axisSupport = {
     border: '1px dashed silver',
@@ -118,7 +121,7 @@ const commodityStyle = {
 
 export interface IProps {
     jsPlumbInstance: jsPlumbInstance
-}
+};
 
 export default class MapCanvas extends React.Component<IProps, MapEditorState> {
 
@@ -140,14 +143,21 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
                 boxShadow: "0 0 10px 3px #00789b",
             });
         }
+
+        let nodes = [] as any[];
+        if(this.state.width === 0 || this.state.height === 0){
+            console.log('miss');
+        } else {
+            nodes = this.renderNodes(MapStore.getState().nodes);
+        }
+
         return (
             <div style={{flex: '1 1 auto', minHeight: 500, minWidth: 600, position: 'relative'}}>
                 <div>
                     <div style={realCanvasDivStyle}
                          ref={input => this.setContainer(input)}>
-                        <ReactResizeDetector handleWidth={true} handleHeight={true} onResize={this.onResize}
-                                             refreshMode="debounce"
-                                             refreshRate={50}/>
+                        <ReactResizeDetector handleWidth={true} handleHeight={true} onResize={this.onResize}/>
+                        {nodes}
                     </div>
                     <div style={axisX}>
                         <div style={genesisStyle}>Genesis</div>
@@ -170,22 +180,34 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
 
     public componentWillMount = () => {
         MapEditorStore.addChangeListener(this.onChange);
+        MapStore.addChangeListener(this.onChange);
     }
 
     public componentWillUnmount = () => {
         MapEditorStore.removeChangeListener(this.onChange);
+        MapStore.addChangeListener(this.onChange);
     }
+
+        // TODO: fix types
+    private renderNodes (nodes:any[]){
+            const result = [];
+            for(const node of nodes){
+                result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance} evolution={node.evolution} visibility={node.visibility}  parentWidth={this.state.width} parentHeight={this.state.height} />);
+            }
+            return result;
+    }
+
 
     private setContainer = (input: HTMLDivElement | null) => {
         this.input = input;
-        if (this.input === null) {
+        if (!this.input) {
             // noop - component was destroyed, no need to worry about draggable
             return;
         }
         this.jsPlumbInstance.setContainer(this.input);
     }
     private onResize = (width: number, height: number) => {
-        MapEditorActions.resize(width,height);
+        MapEditorActions.resize(width,height, this.input);
     }
 
     private onChange = () => {

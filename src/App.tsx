@@ -4,47 +4,54 @@ import './App.css';
 import Palette, {IPaletteComponents} from './components/Palette';
 import logo from './logo.svg';
 
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+
+
 import * as jsPlumb from "jsplumb";
 import MapCanvas from "./components/MapCanvas";
 
-
 const params: IPaletteComponents = [
     {
-        id: 0, key: "0", label: 'CId', visualElement: <div style={{
-            backgroundColor: 'silver'
+        id: 0, key: "UserComponent", label: 'Stakeholder', visualElement: <div style={{
+            backgroundColor: 'white'
+        }}> <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/> </div>
+    },
+    {
+        id: 1, key: "UserNeedComponent", label: 'Need', visualElement: <div style={{
+            backgroundColor: 'rgb(0,120,155)',
+            border : '1px solid black',
+            borderRadius: 6,
+            height: 10,
+            width: 10
         }}/>
     },
     {
-        id: 1, key: "01", label: 'Modified By', visualElement: <div style={{
-            backgroundColor: 'yellow'
+        id: 2, key: "InternalComponent", label: 'Internal Component', visualElement: <div style={{
+            backgroundColor: 'white',
+            border : '1px solid black',
+            borderRadius: 6,
+            height: 10,
+            width: 10
         }}/>
     },
     {
-        id: 2, key: "02", label: 'Modified Date', visualElement: <div style={{
-            backgroundColor: 'red'
+        id: 3, key: "ExternalComponent", label: 'External Component', visualElement: <div style={{
+            backgroundColor: 'gray',
+            border : '1px solid black',
+            borderRadius: 6,
+            height: 10,
+            width: 10
         }}/>
     },
     {
-        id: 3, key: "03", label: 'Status', visualElement: <div style={{
-            backgroundColor: 'green'
+        id: 4, key: "Comment", label: 'Comment', visualElement: <div style={{
+            backgroundColor: 'yellow',
+            border : '1px solid orange',
+            borderRadius: 4,
+            height: 10
         }}/>
-    },
-    {
-        id: 4, key: "04", label: 'Status > Type', visualElement: <div style={{
-            backgroundColor: 'black'
-        }}/>
-    },
-    {
-        id: 5, key: "05", label: 'Title', visualElement: <div style={{
-            backgroundColor: 'blue'
-        }}/>
-    },
-    {
-        id: 6, key: "06", label: 'Type', visualElement: <div style={{
-            backgroundColor: 'purple'
-        }}/>
-    },
-    {id: 7, key: "087", label: 'Type > Status', visualElement: <div style={{backgroundColor: 'gray'}}/>}
+    }
 ];
 
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
