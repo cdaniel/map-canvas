@@ -48,7 +48,8 @@ export default class Palette extends React.Component<IProps, object> {
                 style.width = '20px';
             }
         }
-        return <div ref={this.makeDraggable.bind(this, key)} key={key} style={{margin: 10}}>
+        return <div ref={this.makeDraggable.bind(this, key)} key={key} style={{margin: 10, minWidth: 167,
+            width: 167}}>
             <div>{component.visualElement}</div>
             <span>&nbsp;{component.label}</span></div>;
     }

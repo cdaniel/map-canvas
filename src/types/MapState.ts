@@ -4,7 +4,7 @@ interface IMapState {
         evolution : number,
         id : string,
         name : string,
-        type?: string,
+        type: string,
         visibility : number,
         }>;
 }

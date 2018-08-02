@@ -39,7 +39,7 @@ class MapStore extends FluxStore<IMapState> {
                 evolution : 0.5,
                 id : 'id1',
                 name : 'first name',
-                type: 'default',
+                type: 'UserComponent',
                 visibility : 0.5,
 
             },
@@ -47,7 +47,7 @@ class MapStore extends FluxStore<IMapState> {
                     evolution : 0.5,
                     id : 'id2',
                     name : 'second name',
-                    type: 'default',
+                    type: 'UserNeedComponent',
                     visibility : 0.2,
 
                 },

@@ -1,7 +1,14 @@
 import {Dispatcher} from "flux";
 import FluxStore from './FluxStore';
 
-import {DragStartedEvent, DragStoppedEvent, MapResizeEvent} from "../actions/MapEditorActions";
+import {
+    BlurAllEvent,
+    DragStartedEvent,
+    DragStoppedEvent,
+    FocusAddNodeEvent,
+    FocusNodeEvent,
+    MapResizeEvent
+} from "../actions/MapEditorActions";
 import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapEditorState from '../types/MapEditorState';
 
@@ -23,10 +30,20 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 this.state.height = (action as MapResizeEvent).payload.height;
                 this.state.input = (action as MapResizeEvent).payload.input;
                 this.emitChange();
+            } else if (action instanceof FocusNodeEvent){
+                this.state.focusedNodes = [(action as FocusNodeEvent).payload.id];
+                this.emitChange();
+            } else if (action instanceof FocusAddNodeEvent){
+                this.state.focusedNodes.push((action as FocusNodeEvent).payload.id);
+                this.emitChange();
+            } else if (action instanceof  BlurAllEvent){
+                this.state.focusedNodes = [];
+                this.emitChange();
             }
         }
         super(dispatcher, onDispatch, () => ({
             dragInProgress: false,
+            focusedNodes: [],
             height: 0,
             input: null,
             width: 0,

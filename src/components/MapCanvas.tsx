@@ -12,6 +12,7 @@ import MapStore from '../stores/MapStore';
 import * as MapEditorActions from '../actions/MapEditorActions';
 import MapEditorStore from '../stores/MapEditorStore';
 
+import {SyntheticEvent} from "react";
 import Node from './Node';
 
 const axisSupport = {
@@ -120,7 +121,8 @@ const commodityStyle = {
 };
 
 export interface IProps {
-    jsPlumbInstance: jsPlumbInstance
+    jsPlumbInstance: jsPlumbInstance,
+    styler:(type:string) => HTMLDivElement | any | null
 };
 
 export default class MapCanvas extends React.Component<IProps, MapEditorState> {
@@ -155,7 +157,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             <div style={{flex: '1 1 auto', minHeight: 500, minWidth: 600, position: 'relative'}}>
                 <div>
                     <div style={realCanvasDivStyle}
-                         ref={input => this.setContainer(input)}>
+                         ref={input => this.setContainer(input)} onClick={this.onClickHandler}>
                         <ReactResizeDetector handleWidth={true} handleHeight={true} onResize={this.onResize}/>
                         {nodes}
                     </div>
@@ -178,6 +180,12 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         );
     }
 
+    public onClickHandler = (event : SyntheticEvent) => {
+        MapEditorActions.blurAll();
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
     public componentWillMount = () => {
         MapEditorStore.addChangeListener(this.onChange);
         MapStore.addChangeListener(this.onChange);
@@ -189,12 +197,16 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
     }
 
         // TODO: fix types
-    private renderNodes (nodes:any[]){
-            const result = [];
-            for(const node of nodes){
-                result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance} evolution={node.evolution} visibility={node.visibility}  parentWidth={this.state.width} parentHeight={this.state.height} />);
-            }
-            return result;
+    private renderNodes(nodes: any[]) {
+        const result = [];
+        for (const node of nodes) {
+            const focused = this.state.focusedNodes.indexOf(node.id) > -1;
+            result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance}
+                              evolution={node.evolution} visibility={node.visibility} parentWidth={this.state.width}
+                              parentHeight={this.state.height} styler={this.props.styler} type={node.type}
+                              focused={focused}/>);
+        }
+        return result;
     }
 
 

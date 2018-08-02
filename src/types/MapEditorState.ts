@@ -1,8 +1,9 @@
 interface IMapEditorState {
     dragInProgress  : boolean,
     height: number,
+    input: HTMLDivElement | null,
+    focusedNodes : string[],
     width: number,
-    input: HTMLDivElement | null
 }
 
 export default IMapEditorState;

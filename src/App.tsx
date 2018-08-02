@@ -49,10 +49,65 @@ const params: IPaletteComponents = [
             backgroundColor: 'yellow',
             border : '1px solid orange',
             borderRadius: 4,
-            height: 10
+            height: 12
         }}/>
     }
 ];
+
+function componentBodyStyler(type:string) {
+    if (type === "UserComponent") {
+        return {
+            component: <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/>
+        }
+    } else if (type === "UserNeedComponent") {
+        return {
+            style: {
+                backgroundColor: 'rgb(0,120,155)',
+                border: '1px solid black',
+                borderRadius: 5,
+                height: 8,
+                maxHeight: 8,
+                maxWidth: 8,
+                width: 8,
+            }
+        }
+    } else if (type === "ExternalComponent") {
+        return {
+            style: {
+                backgroundColor: 'gray',
+                border: '1px solid black',
+                borderRadius: 5,
+                height: 8,
+                maxHeight: 8,
+                maxWidth: 8,
+                width: 8,
+            }
+        }
+    } else if (type === "Comment") {
+        return {
+            style: {
+                backgroundColor: 'yellow',
+                border : '1px solid orange',
+                borderRadius: 6,
+                height: 50,
+                maxWidth: 250,
+                width: 70,
+            }
+        }
+    } else  {
+        return {
+            style: {
+                backgroundColor: 'white',
+                border: '1px solid black',
+                borderRadius: 5,
+                height: 8,
+                maxHeight: 8,
+                maxWidth: 8,
+                width: 8,
+            }
+        }
+    }
+}
 
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 
@@ -66,7 +121,7 @@ class App extends React.Component {
                 </header>
                 <div style={{display: 'flex', flex: "1 1 auto",}}>
                     <Palette components={params} jsPlumbInstance={jsPlumbInstance}/>
-                    <MapCanvas jsPlumbInstance={jsPlumbInstance}/>
+                    <MapCanvas jsPlumbInstance={jsPlumbInstance} styler={componentBodyStyler}/>
                 </div>
             </div>
         );
