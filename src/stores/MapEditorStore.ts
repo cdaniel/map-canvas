@@ -8,7 +8,7 @@ import {
     DragStoppedEvent,
     FocusAddNodeEvent,
     FocusNodeEvent,
-    MapResizeEvent
+    MapResizeEvent, ScopeActivatedEvent, ScopeDectivatedEvent
 } from "../actions/MapEditorActions";
 import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapEditorState from '../types/MapEditorState';
@@ -51,9 +51,16 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                     this.state.focusedNodes.splice(index,1);
                 }
                 this.emitChange();
+            } else if (action instanceof ScopeActivatedEvent){
+                this.state.activeScope = action.payload.scopeId;
+                this.emitChange();
+            } else if (action instanceof ScopeDectivatedEvent){
+                this.state.activeScope = null;
+                this.emitChange();
             }
         }
         super(dispatcher, onDispatch, () => ({
+            activeScope : null,
             dragInProgress: false,
             focusedNodes: [],
             height: 0,

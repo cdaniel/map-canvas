@@ -62,8 +62,18 @@ function componentBodyStyler(type:string) {
                 source : [{
                     name: "user-userneed-dependency",
                     relativePos : {
-                        left: 0,
-                        top: 10
+                        left: 7,
+                        top: 40
+                    },
+                    sourceEndpoint : {
+                        connector: ["Straight",{gap: 1}],
+                        endpoint:[ "Blank", { radius:1 }],
+                        isSource:true,
+                    },
+                    targetEndpoint : {
+                        endpoint:[ "Dot", { radius:5 } ],
+                        isTarget:true,
+                        reattach:true
                     }
                 }],
                 target : []
@@ -138,8 +148,8 @@ const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 import MapEditorStore from './stores/MapEditorStore';
 MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
 
-jsPlumbInstance.registerConnectionType("simple-dependency", {});
-jsPlumbInstance.registerConnectionType("user-userneed-dependency", {});
+// jsPlumbInstance.registerConnectionType("simple-dependency", {});
+// jsPlumbInstance.registerConnectionType("user-userneed-dependency", {});
 
 class App extends React.Component {
     public render() {

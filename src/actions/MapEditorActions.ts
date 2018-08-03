@@ -12,6 +12,8 @@ export class FocusNodeEvent extends TypedEvent<any> {}
 export class FocusAddNodeEvent extends TypedEvent<any> {}
 export class BlurAllEvent extends TypedEvent<any> {}
 export class BlurNodeEvent extends TypedEvent<any> {}
+export class ScopeActivatedEvent extends TypedEvent<any> {}
+export class ScopeDectivatedEvent extends TypedEvent<any> {}
 
 
 export function startDrag() {
@@ -42,3 +44,11 @@ export function blurNode(id:string) {
     MapEditorDispatcher.dispatch(new BlurAllEvent({id}));
 }
 
+export function scopeDragActivated(scopeId:string){
+    MapEditorDispatcher.dispatch(new ScopeActivatedEvent({scopeId}));
+}
+
+export function scopeDragDectivated(scopeId:string){
+    MapEditorDispatcher.dispatch(new ScopeDectivatedEvent({scopeId}));
+
+}

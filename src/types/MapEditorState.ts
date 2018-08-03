@@ -1,6 +1,7 @@
 import {jsPlumbInstance} from "jsplumb";
 
 interface IMapEditorState {
+    activeScope: string | null;
     dragInProgress  : boolean,
     height: number,
     input: HTMLDivElement | null,

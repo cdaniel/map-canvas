@@ -17,6 +17,7 @@ import * as MapActions from "../actions/MapActions";
 import MapEditorStore from "../stores/MapEditorStore";
 
 export interface INodeProps {
+    activeDragScope : string | null,
     evolution : number,
     id : string,
     jsPlumbInstance: jsPlumbInstance,
@@ -37,17 +38,46 @@ export default class Node extends React.Component<INodeProps, any> {
 
     private jsPlumbInstance: jsPlumbInstance;
     private input: ElementGroupRef;
-    private dependencyStub: Connection | null;
-    private sourceEndpoint: jsPlumb.Endpoint | null;
-    private targetEndpoint: jsPlumb.Endpoint | null;
+
+    private dependencyStubs: Array<{
+        connection : Connection,
+        parentName : string,
+        sourceEndpoint: jsPlumb.Endpoint,
+        targetEndpoint: jsPlumb.Endpoint
+    }>;
 
     constructor(props: INodeProps) {
         super(props);
         this.jsPlumbInstance = props.jsPlumbInstance;
+        this.dependencyStubs = [];
         this.state = {};
     }
 
 
+    public prepareDragConnectionComponents(){
+        if(!this.state || !this.state.connections || !this.state.connections.source){
+            return null;
+        }
+        const results = new Array<any>();
+        for(const connectionDragStarter of this.state.connections.source){
+            results.push(<div id={this.props.id + "-" + connectionDragStarter.name + '-parentMenu'} key={this.props.id + "-" + connectionDragStarter.name + 'parent'} style={{position:'relative', width:0, height:0}}>
+                <div id={this.props.id + "-" + connectionDragStarter.name + '-parentMenuItem'} style={{position:'absolute', left:connectionDragStarter.relativePos.left, top:connectionDragStarter.relativePos.top}}/>
+            </div>);
+        }
+        return results;
+    }
+
+    public shouldBecomeDragTarget(){
+        if(!this.state || !this.state!.connections || !this.state!.connections.target || !this.state!.connections.target.length){
+            return false;
+        }
+        for(const dropTarget of this.state!.connections.target){
+            if(dropTarget === this.props.activeDragScope){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public render() {
         const left = this.props.evolution * this.props.parentWidth;
@@ -60,16 +90,20 @@ export default class Node extends React.Component<INodeProps, any> {
             componentStyle = _.extend(componentStyle, this.state.style);
         }
 
-        let dependencyMenuComponent = null;
+        if(this.shouldBecomeDragTarget()){
+            componentStyle = _.extend(componentStyle, {boxShadow:'0 0 5px 5px ' + menuItemHighlightColor});
+            this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope});
+        }
+
+
+        let dragConnectionComponents = null;
         let moveComponent = null;
         let deleteComponent = null;
         if(this.props.focused){
-            dependencyMenuComponent = <div id={this.props.id + "-dragMenuParent"} style={{position:'relative', width:0, height:0}}>
-                <div id={this.props.id + "dragMenu"} style={{position:'absolute', left:50, top:20}} className="dragMenu"/>
-            </div>
+            dragConnectionComponents = this.prepareDragConnectionComponents();
             if(this.state.movable){
                 const color = this.state.hoveredMenu === 'moveMenuItem' ? menuItemHighlightColor : menuItemNormalColor;
-                moveComponent = <div id={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
+                moveComponent = <div id={this.props.id + '-moveMenuItemParent'} key={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
                     <div id={this.props.id + '-moveMenuItem'} style={{position:'absolute', left:-20, top:-20, zIndex:10}} onMouseOver={this.onMoveMenuOver} onMouseLeave={this.onMouseLeave}>
                         <FontAwesomeIcon icon={faArrowsAlt} color={color}/>
                     </div>
@@ -77,7 +111,7 @@ export default class Node extends React.Component<INodeProps, any> {
             }
             if(this.state.deletable){
                 const color = this.state.hoveredMenu === 'deleteMenuItem' ? 'orange' : menuItemNormalColor;
-                deleteComponent = <div id={this.props.id + '-deleteMenuItemParent'} style={{position:'relative', width:0, height:0}}>
+                deleteComponent = <div id={this.props.id + '-deleteMenuItemParent'} key={this.props.id + '-deleteMenuItemParent'} style={{position:'relative', width:0, height:0}}>
                     <div id={this.props.id + '-deleteMenuItem'} style={{backgroundColor:'white',position:'absolute', left:28, boxShadow: '0 0 3px white', top:-20, zIndex:10}} onMouseOver={this.onDeleteMenuOver} onMouseLeave={this.onMouseLeave}>
                         <FontAwesomeIcon icon={faTrashAlt} color={color}/>
                     </div>
@@ -86,12 +120,12 @@ export default class Node extends React.Component<INodeProps, any> {
         }
         return (
             <div id={this.props.id} key={this.props.id} style={componentStyle} ref={this.storeNativeHandle} onClick={this.onClickHandler}>
-                {dependencyMenuComponent}
+                {dragConnectionComponents}
                 {moveComponent}
                 {deleteComponent}
 
 
-                <div style={{position:'relative', width:0, height:0}}>
+                <div style={{position:'relative', width:0, height:0}} key="name">
                     <div style={{position:'absolute', left:12, top:-15, fontSize:'small', maxWidth:150, width:100}}>
                         {this.props.name}
                     </div>
@@ -124,8 +158,9 @@ export default class Node extends React.Component<INodeProps, any> {
         if(!this.props.focused){
             return;
         }
-        this.reconcileDependencyStub();
+        this.reconcileDragConnectionStubs();
         this.updateMovableState();
+
     }
 
     public componentDidMount(){
@@ -141,7 +176,7 @@ export default class Node extends React.Component<INodeProps, any> {
         if(!this.props.focused){
             return;
         }
-        this.reconcileDependencyStub();
+        this.reconcileDragConnectionStubs();
         this.updateMovableState();
     }
 
@@ -155,54 +190,63 @@ export default class Node extends React.Component<INodeProps, any> {
     }
 
     public componentWillUnmount(){
-        if(this.props.focused && this.dependencyStub !== null){
-            this.jsPlumbInstance.deleteConnection(this.dependencyStub!);
-            this.dependencyStub = null;
-            this.jsPlumbInstance.deleteEndpoint(this.sourceEndpoint!);
-            this.sourceEndpoint = null;
+        if(this.props.focused && this.dependencyStubs.length !== 0){
+            for(const dependencyStub of this.dependencyStubs) {
+                this.jsPlumbInstance.deleteConnection(dependencyStub.connection);
+                this.jsPlumbInstance.deleteEndpoint(dependencyStub.sourceEndpoint);
+                this.jsPlumbInstance.remove(dependencyStub.parentName);
+                this.jsPlumbInstance.deleteEndpoint(dependencyStub.targetEndpoint);
 
-            this.jsPlumbInstance.remove(this.props.id + "dragMenu");
-
-            this.jsPlumbInstance.deleteEndpoint(this.targetEndpoint!);
-
-            this.targetEndpoint = null;
+            }
+            this.dependencyStubs = [];
         }
     }
 
-    public reconcileDependencyStub = () => {
+    public reconcileDragConnectionStubs = () => {
         this.jsPlumbInstance.revalidate(this.input as ElementRef);
-        this.jsPlumbInstance.revalidate(this.props.id + "-dragMenuParent");
-        this.jsPlumbInstance.revalidate(this.props.id + "dragMenu");
-        if(this.props.focused && !this.dependencyStub){
-            const sourceEndpoint = {
-                connector: ["Straight",{gap: 1}],
-                endpoint:[ "Blank", { radius:5 } ],
-                isSource:true,
-            } as any;
-            const targetEndpoint = {
-                endpoint:[ "Dot", { radius:5 } ],
-                isTarget:true,
-                reattach:true
-            } as any;
-            this.sourceEndpoint = this.jsPlumbInstance.addEndpoint(this.input, sourceEndpoint) as Endpoint;
-            this.targetEndpoint = this.jsPlumbInstance.addEndpoint(this.props.id + "dragMenu", targetEndpoint) as Endpoint;
-            this.dependencyStub = this.jsPlumbInstance.connect({source:this.sourceEndpoint, target:this.targetEndpoint, deleteEndpointsOnDetach:true});
+        if(!this.state.connections || !this.state.connections.source){
+            return;
+        }
+        for(const connectionDragStarter of this.state.connections.source) {
+            this.jsPlumbInstance.revalidate(this.props.id + "-" + connectionDragStarter.name + '-parentMenu');
+            this.jsPlumbInstance.revalidate(this.props.id + "-" + connectionDragStarter.name + '-parentMenuItem');
+        }
+        if(this.props.focused && this.dependencyStubs.length === 0){
+            for(const connectionDragStarter of this.state.connections.source) {
+                const parentName = this.props.id + "-" + connectionDragStarter.name + '-parentMenuItem';
+                const newSourceEndpointOptions = connectionDragStarter.sourceEndpoint;
+                newSourceEndpointOptions.scope = connectionDragStarter.name;
+
+                const newTargetEndpointOptions = connectionDragStarter.targetEndpoint;
+                newTargetEndpointOptions.scope = connectionDragStarter.name;
+
+                const targetEndpoint = this.jsPlumbInstance.addEndpoint(parentName, connectionDragStarter.targetEndpoint) as Endpoint;
+                const sourceEndpoint = this.jsPlumbInstance.addEndpoint(this.props.id, connectionDragStarter.sourceEndpoint) as Endpoint;
+
+                const connection = this.jsPlumbInstance.connect({source:sourceEndpoint, target:targetEndpoint, deleteEndpointsOnDetach:true});
+                this.dependencyStubs.push({
+                    connection,
+                    parentName,
+                    sourceEndpoint,
+                    targetEndpoint,
+                });
+            }
         }
     }
 
     public componentWillReceiveProps(nextProps: INodeProps){
         this.computedLookUpdate(nextProps);
-        if(this.props.focused && !nextProps.focused && this.dependencyStub !== null){
-            this.jsPlumbInstance.deleteConnection(this.dependencyStub!);
-            this.dependencyStub = null;
-            this.jsPlumbInstance.deleteEndpoint(this.sourceEndpoint!);
-            this.sourceEndpoint = null;
 
-            this.jsPlumbInstance.remove(this.props.id + "dragMenu");
+        if(this.props.focused && !nextProps.focused){
 
-            this.jsPlumbInstance.deleteEndpoint(this.targetEndpoint!);
+            for(const dependencyStub of this.dependencyStubs) {
+                this.jsPlumbInstance.deleteConnection(dependencyStub.connection);
+                this.jsPlumbInstance.deleteEndpoint(dependencyStub.sourceEndpoint);
+                this.jsPlumbInstance.remove(dependencyStub.parentName);
+                this.jsPlumbInstance.deleteEndpoint(dependencyStub.targetEndpoint);
 
-            this.targetEndpoint = null;
+            }
+            this.dependencyStubs = [];
         }
         if(this.props.focused && !nextProps.focused){
             // stop highlighting any menu
@@ -237,6 +281,7 @@ export default class Node extends React.Component<INodeProps, any> {
     private computedLookUpdate = (props : any) => {
         const computedLook = this.props.styler(props.type);
         const newState = {
+            connections: computedLook.connections,
             deletable: computedLook.deletable,
             injectedComponent: computedLook.component,
             movable: computedLook.movable,

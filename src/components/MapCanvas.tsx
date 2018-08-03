@@ -205,7 +205,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance}
                               evolution={node.evolution} visibility={node.visibility} parentWidth={this.state.width}
                               parentHeight={this.state.height} styler={this.props.styler} type={node.type}
-                              focused={focused}/>);
+                              focused={focused} activeDragScope={this.state.activeScope}/>);
         }
         return result;
     }
@@ -218,7 +218,22 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             return;
         }
         this.jsPlumbInstance.setContainer(this.input);
+        this.jsPlumbInstance.unbind('connectionDrag', this.connectionDragStarted);
+        this.jsPlumbInstance.unbind('connectionDragStop', this.connectionDragStopped);
+        this.jsPlumbInstance.bind('connectionDrag', this.connectionDragStarted);
+        this.jsPlumbInstance.bind('connectionDragStop', this.connectionDragStopped);
     }
+
+    private connectionDragStarted = (event:any) => {
+        MapEditorActions.scopeDragActivated(event.scope);
+    }
+
+
+    private connectionDragStopped = (event:any) => {
+        MapEditorActions.scopeDragDectivated(event.scope);
+    }
+
+
     private onResize = (width: number, height: number) => {
         MapEditorActions.resize(width,height, this.input);
     }
