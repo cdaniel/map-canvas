@@ -35,3 +35,4 @@ export function addNodeToFocus(id:string){
 export function blurAll() {
     MapEditorDispatcher.dispatch(new BlurAllEvent(null));
 }
+

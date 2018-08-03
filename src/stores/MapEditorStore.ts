@@ -1,6 +1,7 @@
 import {Dispatcher} from "flux";
 import FluxStore from './FluxStore';
 
+import {jsPlumbInstance} from "jsplumb";
 import {
     BlurAllEvent,
     DragStartedEvent,
@@ -31,13 +32,17 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 this.state.input = (action as MapResizeEvent).payload.input;
                 this.emitChange();
             } else if (action instanceof FocusNodeEvent){
+                this.state.jsPlumbInstance!.clearDragSelection();
                 this.state.focusedNodes = [(action as FocusNodeEvent).payload.id];
+                this.state.jsPlumbInstance!.addToDragSelection((action as FocusNodeEvent).payload.id);
                 this.emitChange();
             } else if (action instanceof FocusAddNodeEvent){
                 this.state.focusedNodes.push((action as FocusNodeEvent).payload.id);
+                this.state.jsPlumbInstance!.addToDragSelection((action as FocusNodeEvent).payload.id);
                 this.emitChange();
             } else if (action instanceof  BlurAllEvent){
                 this.state.focusedNodes = [];
+                this.state.jsPlumbInstance!.clearDragSelection();
                 this.emitChange();
             }
         }
@@ -46,6 +51,7 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
             focusedNodes: [],
             height: 0,
             input: null,
+            jsPlumbInstance : null,
             width: 0,
         }));
     }
@@ -54,14 +60,16 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
         return this.state
     }
 
+    public setJsPlumbInstance(plumb:jsPlumbInstance){
+        this.state.jsPlumbInstance = plumb;
+    }
+
     public verifyTarget(params:any){
         const target = params.e.target;
         return target === this.state.input;
     }
 
-    public normalizeCoord(params:any){
-        const retrievedEvolution = params.e.offsetX;
-        const retrievedVisibility = params.e.offsetY;
+    public normalizeCoord(retrievedEvolution:number,retrievedVisibility:number){
 
         const evolution = retrievedEvolution / this.state.width;
         const visibility = retrievedVisibility / this.state.height;

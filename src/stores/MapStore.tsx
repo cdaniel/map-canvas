@@ -4,7 +4,7 @@ import FluxStore from './FluxStore';
 import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapState from '../types/MapState';
 
-import {LoadMapEvent, NewNodeIntentEvent} from "../actions/MapActions";
+import {LoadMapEvent, NewNodeIntentEvent, NodeDraggedEvent} from "../actions/MapActions";
 
 function makeid() {
     let text = "";
@@ -32,6 +32,17 @@ class MapStore extends FluxStore<IMapState> {
                     type:(action as NewNodeIntentEvent).payload.type,
                     visibility: (action as NewNodeIntentEvent).payload.coords.visibility,
                 });
+                this.emitChange();
+            } else if (action instanceof NodeDraggedEvent){
+                const coords = action.payload.coords;
+                const id = action.payload.id;
+                console.log(id, coords);
+                for(const node of this.state.nodes){
+                    if(node.id === id){
+                        node.visibility = coords.visibility;
+                        node.evolution = coords.evolution;
+                    }
+                }
                 this.emitChange();
             }
         }

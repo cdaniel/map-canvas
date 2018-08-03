@@ -57,10 +57,12 @@ const params: IPaletteComponents = [
 function componentBodyStyler(type:string) {
     if (type === "UserComponent") {
         return {
-            component: <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/>
+            component: <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/>,
+            movable : true
         }
     } else if (type === "UserNeedComponent") {
         return {
+            movable : true,
             style: {
                 backgroundColor: 'rgb(0,120,155)',
                 border: '1px solid black',
@@ -73,6 +75,7 @@ function componentBodyStyler(type:string) {
         }
     } else if (type === "ExternalComponent") {
         return {
+            movable : true,
             style: {
                 backgroundColor: 'gray',
                 border: '1px solid black',
@@ -85,6 +88,7 @@ function componentBodyStyler(type:string) {
         }
     } else if (type === "Comment") {
         return {
+            movable : true,
             style: {
                 backgroundColor: 'yellow',
                 border : '1px solid orange',
@@ -95,7 +99,9 @@ function componentBodyStyler(type:string) {
             }
         }
     } else  {
+        // pretend type InternalComponent
         return {
+            movable : true,
             style: {
                 backgroundColor: 'white',
                 border: '1px solid black',
@@ -104,12 +110,14 @@ function componentBodyStyler(type:string) {
                 maxHeight: 8,
                 maxWidth: 8,
                 width: 8,
-            }
+            },
         }
     }
 }
 
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
+import MapEditorStore from './stores/MapEditorStore';
+MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
 
 class App extends React.Component {
     public render() {

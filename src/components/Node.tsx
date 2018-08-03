@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+// @ts-ignore
 import {Connection, ElementGroupRef, ElementRef, Endpoint, jsPlumbInstance} from "jsplumb";
 import * as _ from "underscore";
 
@@ -7,7 +8,13 @@ import * as MapEditorActions from '../actions/MapEditorActions'
 
 import {SyntheticEvent} from "react";
 
+// @ts-ignore
 import * as jsPlumb from "jsplumb";
+
+import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import * as MapActions from "../actions/MapActions";
+import MapEditorStore from "../stores/MapEditorStore";
 
 export interface INodeProps {
     evolution : number,
@@ -22,6 +29,9 @@ export interface INodeProps {
     focused : boolean
 }
 
+const menuItemNormalColor = 'gray';
+
+const menuItemHighlightColor = 'rgb(0,120,155)';
 
 export default class Node extends React.Component<INodeProps, any> {
 
@@ -34,6 +44,7 @@ export default class Node extends React.Component<INodeProps, any> {
     constructor(props: INodeProps) {
         super(props);
         this.jsPlumbInstance = props.jsPlumbInstance;
+        this.state = {};
     }
 
 
@@ -46,6 +57,7 @@ export default class Node extends React.Component<INodeProps, any> {
         let componentStyle = {left, top, zIndex, position};
         let injectedComponent = null;
         const computedLook = this.props.styler(this.props.type);
+        let movable = false;
         if(computedLook){
             if(computedLook.style){
                 componentStyle = _.extend(componentStyle, computedLook.style);
@@ -53,17 +65,28 @@ export default class Node extends React.Component<INodeProps, any> {
             if(computedLook.component){
                 injectedComponent = computedLook.component;
             }
+            movable = computedLook.movable;
         }
 
         let dependencyMenuComponent = null;
+        let moveComponent = null;
         if(this.props.focused){
-            dependencyMenuComponent = <div id={this.props.id + "dragMenuParent"} style={{position:'relative', width:0, height:0}}>
+            dependencyMenuComponent = <div id={this.props.id + "-dragMenuParent"} style={{position:'relative', width:0, height:0}}>
                 <div id={this.props.id + "dragMenu"} style={{position:'absolute', left:50, top:20}} className="dragMenu"/>
             </div>
+            if(movable){
+                const color = this.state.hoveredMenu === 'moveMenuItem' ? menuItemHighlightColor : menuItemNormalColor;
+                moveComponent = <div id={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
+                    <div id={this.props.id + '-moveMenuItem'} style={{position:'absolute', left:-20, top:-20}} onMouseOver={this.onMoveMenuOver} onMouseLeave={this.onMouseLeave}>
+                        <FontAwesomeIcon icon={faArrowsAlt} color={color}/>
+                    </div>
+                </div>
+            }
         }
         return (
             <div id={this.props.id} key={this.props.id} style={componentStyle} ref={this.storeNativeHandle} onClick={this.onClickHandler}>
                 {dependencyMenuComponent}
+                {moveComponent}
 
 
                 <div style={{position:'relative', width:0, height:0}}>
@@ -76,6 +99,18 @@ export default class Node extends React.Component<INodeProps, any> {
         );
     }
 
+    public onMoveMenuOver = () => {
+        this.onMouseOver('moveMenuItem');
+    }
+
+    public onMouseOver = (hoveredMenu:string) => {
+        this.setState({hoveredMenu});
+    }
+
+    public onMouseLeave = () => {
+        this.setState({hoveredMenu:null});
+    }
+
     public componentDidUpdate(){
         if(!this.input){
             return;
@@ -84,16 +119,31 @@ export default class Node extends React.Component<INodeProps, any> {
             return;
         }
         this.reconcileDependencyStub();
+        this.updateMovableState();
     }
 
     public componentDidMount(){
         if(!this.input){
             return;
         }
+        this.jsPlumbInstance.draggable(this.input, {
+            containment : true,
+            stop: this.moveStopped
+        } as any)
         if(!this.props.focused){
             return;
         }
         this.reconcileDependencyStub();
+        this.updateMovableState();
+    }
+
+    public moveStopped = (event:any) => {
+        const coords = MapEditorStore.normalizeCoord(event.pos[0], event.pos[1]);
+        MapActions.nodeWasMoved(this.props.id, coords);
+    }
+
+    public updateMovableState(){
+        this.jsPlumbInstance.setDraggable(this.input, this.state.hoveredMenu === 'moveMenuItem');
     }
 
     public reconcileDependencyStub = () => {
@@ -113,12 +163,12 @@ export default class Node extends React.Component<INodeProps, any> {
             this.dependencyStub = this.jsPlumbInstance.connect({source:this.sourceEndpoint, target:this.targetEndpoint, deleteEndpointsOnDetach:true});
         }
         this.jsPlumbInstance.revalidate(this.input as ElementRef);
-        this.jsPlumbInstance.revalidate(this.props.id + "dragMenuParent");
+        this.jsPlumbInstance.revalidate(this.props.id + "-dragMenuParent");
         this.jsPlumbInstance.revalidate(this.props.id + "dragMenu");
     }
 
     public componentWillReceiveProps(nextProps: INodeProps){
-        if(!nextProps.focused && this.dependencyStub !== null){
+        if(this.props.focused && !nextProps.focused && this.dependencyStub !== null){
             this.jsPlumbInstance.deleteConnection(this.dependencyStub!);
             this.dependencyStub = null;
             this.jsPlumbInstance.deleteEndpoint(this.sourceEndpoint!);
@@ -129,6 +179,10 @@ export default class Node extends React.Component<INodeProps, any> {
             this.jsPlumbInstance.deleteEndpoint(this.targetEndpoint!);
 
             this.targetEndpoint = null;
+        }
+        if(this.props.focused && !nextProps.focused){
+            // stop highlighting any menu
+            this.setState({hoveredMenu:null});
         }
     }
 
@@ -147,6 +201,9 @@ export default class Node extends React.Component<INodeProps, any> {
         }
         event.preventDefault();
         event.stopPropagation();
+        if(this.props.focused && this.state.hoveredMenu === 'dragMenu'){
+            return;
+        }
     }
 
 }

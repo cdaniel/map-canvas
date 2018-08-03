@@ -67,13 +67,14 @@ export default class Palette extends React.Component<IProps, object> {
             ],
             ignoreZoom: true,
             start : () => {
+                MapEditorActions.blurAll();
                 MapEditorActions.startDrag();
             },
             stop : (params : any ) => {
                 MapEditorActions.stopDrag(type, params);
                 // if the drop is on the map canvas
                 if(MapEditorStore.verifyTarget(params)){
-                    const coords = MapEditorStore.normalizeCoord(params);
+                    const coords = MapEditorStore.normalizeCoord(params.e.offsetX, params.e.offsetY);
                     MapActions.initiateNewNodeCreationProcess(type, coords);
                 }
             }

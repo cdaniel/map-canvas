@@ -4,6 +4,7 @@ import * as _ from 'underscore';
 
 import ReactResizeDetector from 'react-resize-detector';
 
+// @ts-ignore
 import {jsPlumbInstance} from "jsplumb";
 import MapEditorState from "../types/MapEditorState";
 
