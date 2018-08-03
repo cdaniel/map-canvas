@@ -58,10 +58,12 @@ function componentBodyStyler(type:string) {
     if (type === "UserComponent") {
         return {
             component: <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/>,
+            deletable : true,
             movable : true
         }
     } else if (type === "UserNeedComponent") {
         return {
+            deletable: true,
             movable : true,
             style: {
                 backgroundColor: 'rgb(0,120,155)',
@@ -75,6 +77,7 @@ function componentBodyStyler(type:string) {
         }
     } else if (type === "ExternalComponent") {
         return {
+            deletable: true,
             movable : true,
             style: {
                 backgroundColor: 'gray',
@@ -88,6 +91,7 @@ function componentBodyStyler(type:string) {
         }
     } else if (type === "Comment") {
         return {
+            deletable: true,
             movable : true,
             style: {
                 backgroundColor: 'yellow',
@@ -101,6 +105,7 @@ function componentBodyStyler(type:string) {
     } else  {
         // pretend type InternalComponent
         return {
+            deletable: true,
             movable : true,
             style: {
                 backgroundColor: 'white',

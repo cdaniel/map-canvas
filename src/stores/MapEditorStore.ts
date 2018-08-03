@@ -3,7 +3,7 @@ import FluxStore from './FluxStore';
 
 import {jsPlumbInstance} from "jsplumb";
 import {
-    BlurAllEvent,
+    BlurAllEvent, BlurNodeEvent,
     DragStartedEvent,
     DragStoppedEvent,
     FocusAddNodeEvent,
@@ -43,6 +43,13 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
             } else if (action instanceof  BlurAllEvent){
                 this.state.focusedNodes = [];
                 this.state.jsPlumbInstance!.clearDragSelection();
+                this.emitChange();
+            } else if (action instanceof BlurNodeEvent){
+                this.state.jsPlumbInstance!.removeFromDragSelection(action.payload.id);
+                const index = this.state.focusedNodes.indexOf(action.payload.id);
+                if(index > -1){
+                    this.state.focusedNodes.splice(index,1);
+                }
                 this.emitChange();
             }
         }

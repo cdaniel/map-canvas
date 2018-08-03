@@ -8,6 +8,8 @@ export class LoadMapEvent extends TypedEvent<any> {};
 
 export class NodeDraggedEvent extends TypedEvent<any> {}
 
+export class InitiateNodeDeletionEvent extends TypedEvent<any> {}
+
 export function initiateNewNodeCreationProcess(type:string, coords:any) {
     MapEditorDispatcher.dispatch(new NewNodeIntentEvent({
         coords, type,
@@ -22,4 +24,8 @@ export function loadMap(map:IMapState){
 
 export function nodeWasMoved(id:string, coords:any){
     MapEditorDispatcher.dispatch(new NodeDraggedEvent({id, coords}));
+}
+
+export function initiateNodeDeletion(id:string){
+    MapEditorDispatcher.dispatch(new InitiateNodeDeletionEvent({id}));
 }

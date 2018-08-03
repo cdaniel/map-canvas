@@ -11,6 +11,8 @@ export class MapResizeEvent extends TypedEvent<any> {}
 export class FocusNodeEvent extends TypedEvent<any> {}
 export class FocusAddNodeEvent extends TypedEvent<any> {}
 export class BlurAllEvent extends TypedEvent<any> {}
+export class BlurNodeEvent extends TypedEvent<any> {}
+
 
 export function startDrag() {
     MapEditorDispatcher.dispatch(new DragStartedEvent(null));
@@ -34,5 +36,9 @@ export function addNodeToFocus(id:string){
 
 export function blurAll() {
     MapEditorDispatcher.dispatch(new BlurAllEvent(null));
+}
+
+export function blurNode(id:string) {
+    MapEditorDispatcher.dispatch(new BlurAllEvent({id}));
 }
 

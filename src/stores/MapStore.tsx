@@ -4,7 +4,7 @@ import FluxStore from './FluxStore';
 import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapState from '../types/MapState';
 
-import {LoadMapEvent, NewNodeIntentEvent, NodeDraggedEvent} from "../actions/MapActions";
+import {InitiateNodeDeletionEvent, LoadMapEvent, NewNodeIntentEvent, NodeDraggedEvent} from "../actions/MapActions";
 
 function makeid() {
     let text = "";
@@ -16,60 +16,66 @@ function makeid() {
 
     return text;
 }
+
 class MapStore extends FluxStore<IMapState> {
 
 
-    constructor(dispatcher:  Dispatcher<Event>) {
+    constructor(dispatcher: Dispatcher<Event>) {
         const onDispatch = (action: Event) => {
             if (action instanceof LoadMapEvent) {
                 this.state = (action as LoadMapEvent).payload.map;
                 this.emitChange();
             } else if (action instanceof NewNodeIntentEvent) {
                 this.state.nodes.push({
-                    evolution : (action as NewNodeIntentEvent).payload.coords.evolution,
+                    evolution: (action as NewNodeIntentEvent).payload.coords.evolution,
                     id: makeid(),
                     name: makeid(),
-                    type:(action as NewNodeIntentEvent).payload.type,
+                    type: (action as NewNodeIntentEvent).payload.type,
                     visibility: (action as NewNodeIntentEvent).payload.coords.visibility,
                 });
                 this.emitChange();
-            } else if (action instanceof NodeDraggedEvent){
+            } else if (action instanceof NodeDraggedEvent) {
                 const coords = action.payload.coords;
                 const id = action.payload.id;
-                console.log(id, coords);
-                for(const node of this.state.nodes){
-                    if(node.id === id){
+                for (const node of this.state.nodes) {
+                    if (node.id === id) {
                         node.visibility = coords.visibility;
                         node.evolution = coords.evolution;
                     }
                 }
                 this.emitChange();
+            } else if (action instanceof InitiateNodeDeletionEvent){
+                const id = action.payload.id;
+                this.state.nodes = this.state.nodes.filter(node => node.id !== id);
+                this.emitChange();
             }
         }
-        super(dispatcher, onDispatch, () => ({nodes:[{
-                evolution : 0.5,
-                id : 'id1',
-                name : 'first name',
+        super(dispatcher, onDispatch, () => ({
+            nodes: [{
+                evolution: 0.5,
+                id: 'id1',
+                name: 'first name',
                 type: 'UserComponent',
-                visibility : 0.5,
+                visibility: 0.5,
 
             },
                 {
-                    evolution : 0.5,
-                    id : 'id2',
-                    name : 'second name',
+                    evolution: 0.5,
+                    id: 'id2',
+                    name: 'second name',
                     type: 'UserNeedComponent',
-                    visibility : 0.2,
+                    visibility: 0.2,
 
                 },
                 {
-                    evolution : 0.7,
-                    id : 'id3',
-                    name : 'third name',
+                    evolution: 0.7,
+                    id: 'id3',
+                    name: 'third name',
                     type: 'default',
-                    visibility : 0.6,
+                    visibility: 0.6,
 
-                },]}));
+                },]
+        }));
     }
 
     public getState() {

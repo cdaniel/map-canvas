@@ -11,7 +11,7 @@ import {SyntheticEvent} from "react";
 // @ts-ignore
 import * as jsPlumb from "jsplumb";
 
-import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons'
+import { faArrowsAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import * as MapActions from "../actions/MapActions";
 import MapEditorStore from "../stores/MapEditorStore";
@@ -58,6 +58,7 @@ export default class Node extends React.Component<INodeProps, any> {
         let injectedComponent = null;
         const computedLook = this.props.styler(this.props.type);
         let movable = false;
+        let deletable = false;
         if(computedLook){
             if(computedLook.style){
                 componentStyle = _.extend(componentStyle, computedLook.style);
@@ -66,10 +67,12 @@ export default class Node extends React.Component<INodeProps, any> {
                 injectedComponent = computedLook.component;
             }
             movable = computedLook.movable;
+            deletable = computedLook.deletable;
         }
 
         let dependencyMenuComponent = null;
         let moveComponent = null;
+        let deleteComponent = null;
         if(this.props.focused){
             dependencyMenuComponent = <div id={this.props.id + "-dragMenuParent"} style={{position:'relative', width:0, height:0}}>
                 <div id={this.props.id + "dragMenu"} style={{position:'absolute', left:50, top:20}} className="dragMenu"/>
@@ -77,8 +80,16 @@ export default class Node extends React.Component<INodeProps, any> {
             if(movable){
                 const color = this.state.hoveredMenu === 'moveMenuItem' ? menuItemHighlightColor : menuItemNormalColor;
                 moveComponent = <div id={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
-                    <div id={this.props.id + '-moveMenuItem'} style={{position:'absolute', left:-20, top:-20}} onMouseOver={this.onMoveMenuOver} onMouseLeave={this.onMouseLeave}>
+                    <div id={this.props.id + '-moveMenuItem'} style={{position:'absolute', left:-20, top:-20, zIndex:10}} onMouseOver={this.onMoveMenuOver} onMouseLeave={this.onMouseLeave}>
                         <FontAwesomeIcon icon={faArrowsAlt} color={color}/>
+                    </div>
+                </div>
+            }
+            if(deletable){
+                const color = this.state.hoveredMenu === 'deleteMenuItem' ? 'orange' : menuItemNormalColor;
+                deleteComponent = <div id={this.props.id + '-deleteMenuItemParent'} style={{position:'relative', width:0, height:0}}>
+                    <div id={this.props.id + '-deleteMenuItem'} style={{backgroundColor:'white',position:'absolute', left:28, boxShadow: '0 0 3px white', top:-20, zIndex:10}} onMouseOver={this.onDeleteMenuOver} onMouseLeave={this.onMouseLeave}>
+                        <FontAwesomeIcon icon={faTrashAlt} color={color}/>
                     </div>
                 </div>
             }
@@ -87,6 +98,7 @@ export default class Node extends React.Component<INodeProps, any> {
             <div id={this.props.id} key={this.props.id} style={componentStyle} ref={this.storeNativeHandle} onClick={this.onClickHandler}>
                 {dependencyMenuComponent}
                 {moveComponent}
+                {deleteComponent}
 
 
                 <div style={{position:'relative', width:0, height:0}}>
@@ -97,6 +109,10 @@ export default class Node extends React.Component<INodeProps, any> {
                 {injectedComponent}
             </div>
         );
+    }
+
+    public onDeleteMenuOver = () => {
+        this.onMouseOver('deleteMenuItem');
     }
 
     public onMoveMenuOver = () => {
@@ -130,6 +146,7 @@ export default class Node extends React.Component<INodeProps, any> {
             containment : true,
             stop: this.moveStopped
         } as any)
+        this.jsPlumbInstance.setDraggable(this.input, false);
         if(!this.props.focused){
             return;
         }
@@ -146,7 +163,25 @@ export default class Node extends React.Component<INodeProps, any> {
         this.jsPlumbInstance.setDraggable(this.input, this.state.hoveredMenu === 'moveMenuItem');
     }
 
+    public componentWillUnmount(){
+        if(this.props.focused && this.dependencyStub !== null){
+            this.jsPlumbInstance.deleteConnection(this.dependencyStub!);
+            this.dependencyStub = null;
+            this.jsPlumbInstance.deleteEndpoint(this.sourceEndpoint!);
+            this.sourceEndpoint = null;
+
+            this.jsPlumbInstance.remove(this.props.id + "dragMenu");
+
+            this.jsPlumbInstance.deleteEndpoint(this.targetEndpoint!);
+
+            this.targetEndpoint = null;
+        }
+    }
+
     public reconcileDependencyStub = () => {
+        this.jsPlumbInstance.revalidate(this.input as ElementRef);
+        this.jsPlumbInstance.revalidate(this.props.id + "-dragMenuParent");
+        this.jsPlumbInstance.revalidate(this.props.id + "dragMenu");
         if(this.props.focused && !this.dependencyStub){
             const sourceEndpoint = {
                 connector: ["Straight",{gap: 1}],
@@ -162,9 +197,6 @@ export default class Node extends React.Component<INodeProps, any> {
             this.targetEndpoint = this.jsPlumbInstance.addEndpoint(this.props.id + "dragMenu", targetEndpoint) as Endpoint;
             this.dependencyStub = this.jsPlumbInstance.connect({source:this.sourceEndpoint, target:this.targetEndpoint, deleteEndpointsOnDetach:true});
         }
-        this.jsPlumbInstance.revalidate(this.input as ElementRef);
-        this.jsPlumbInstance.revalidate(this.props.id + "-dragMenuParent");
-        this.jsPlumbInstance.revalidate(this.props.id + "dragMenu");
     }
 
     public componentWillReceiveProps(nextProps: INodeProps){
@@ -201,8 +233,12 @@ export default class Node extends React.Component<INodeProps, any> {
         }
         event.preventDefault();
         event.stopPropagation();
-        if(this.props.focused && this.state.hoveredMenu === 'dragMenu'){
+        if(this.props.focused && this.state.hoveredMenu === 'dragMenuItem'){
             return;
+        }
+        if(this.props.focused && this.state.hoveredMenu === 'deleteMenuItem'){
+            MapEditorActions.blurNode(this.props.id);
+            MapActions.initiateNodeDeletion(this.props.id);
         }
     }
 
