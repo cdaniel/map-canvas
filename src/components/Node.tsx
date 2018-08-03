@@ -55,19 +55,9 @@ export default class Node extends React.Component<INodeProps, any> {
         const zIndex = 6;
         const position = 'absolute' as 'absolute';
         let componentStyle = {left, top, zIndex, position};
-        let injectedComponent = null;
-        const computedLook = this.props.styler(this.props.type);
-        let movable = false;
-        let deletable = false;
-        if(computedLook){
-            if(computedLook.style){
-                componentStyle = _.extend(componentStyle, computedLook.style);
-            }
-            if(computedLook.component){
-                injectedComponent = computedLook.component;
-            }
-            movable = computedLook.movable;
-            deletable = computedLook.deletable;
+
+        if(this.state.style) {
+            componentStyle = _.extend(componentStyle, this.state.style);
         }
 
         let dependencyMenuComponent = null;
@@ -77,7 +67,7 @@ export default class Node extends React.Component<INodeProps, any> {
             dependencyMenuComponent = <div id={this.props.id + "-dragMenuParent"} style={{position:'relative', width:0, height:0}}>
                 <div id={this.props.id + "dragMenu"} style={{position:'absolute', left:50, top:20}} className="dragMenu"/>
             </div>
-            if(movable){
+            if(this.state.movable){
                 const color = this.state.hoveredMenu === 'moveMenuItem' ? menuItemHighlightColor : menuItemNormalColor;
                 moveComponent = <div id={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
                     <div id={this.props.id + '-moveMenuItem'} style={{position:'absolute', left:-20, top:-20, zIndex:10}} onMouseOver={this.onMoveMenuOver} onMouseLeave={this.onMouseLeave}>
@@ -85,7 +75,7 @@ export default class Node extends React.Component<INodeProps, any> {
                     </div>
                 </div>
             }
-            if(deletable){
+            if(this.state.deletable){
                 const color = this.state.hoveredMenu === 'deleteMenuItem' ? 'orange' : menuItemNormalColor;
                 deleteComponent = <div id={this.props.id + '-deleteMenuItemParent'} style={{position:'relative', width:0, height:0}}>
                     <div id={this.props.id + '-deleteMenuItem'} style={{backgroundColor:'white',position:'absolute', left:28, boxShadow: '0 0 3px white', top:-20, zIndex:10}} onMouseOver={this.onDeleteMenuOver} onMouseLeave={this.onMouseLeave}>
@@ -106,7 +96,7 @@ export default class Node extends React.Component<INodeProps, any> {
                         {this.props.name}
                     </div>
                 </div>
-                {injectedComponent}
+                {this.state.injectedComponent}
             </div>
         );
     }
@@ -142,6 +132,7 @@ export default class Node extends React.Component<INodeProps, any> {
         if(!this.input){
             return;
         }
+        this.computedLookUpdate(this.props);
         this.jsPlumbInstance.draggable(this.input, {
             containment : true,
             stop: this.moveStopped
@@ -200,6 +191,7 @@ export default class Node extends React.Component<INodeProps, any> {
     }
 
     public componentWillReceiveProps(nextProps: INodeProps){
+        this.computedLookUpdate(nextProps);
         if(this.props.focused && !nextProps.focused && this.dependencyStub !== null){
             this.jsPlumbInstance.deleteConnection(this.dependencyStub!);
             this.dependencyStub = null;
@@ -240,6 +232,20 @@ export default class Node extends React.Component<INodeProps, any> {
             MapEditorActions.blurNode(this.props.id);
             MapActions.initiateNodeDeletion(this.props.id);
         }
+    }
+
+    private computedLookUpdate = (props : any) => {
+        const computedLook = this.props.styler(props.type);
+        const newState = {
+            deletable: computedLook.deletable,
+            injectedComponent: computedLook.component,
+            movable: computedLook.movable,
+            style: computedLook.style
+        };
+        if(computedLook) {
+            this.setState(newState);
+        };
+        return newState;
     }
 
 }

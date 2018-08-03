@@ -13,12 +13,12 @@ import MapCanvas from "./components/MapCanvas";
 
 const params: IPaletteComponents = [
     {
-        id: 0, key: "UserComponent", label: 'Stakeholder', visualElement: <div style={{
+        id: 0, key: "user-node", label: 'Stakeholder', visualElement: <div style={{
             backgroundColor: 'white'
         }}> <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/> </div>
     },
     {
-        id: 1, key: "UserNeedComponent", label: 'Need', visualElement: <div style={{
+        id: 1, key: "user-need-node", label: 'Need', visualElement: <div style={{
             backgroundColor: 'rgb(0,120,155)',
             border : '1px solid black',
             borderRadius: 6,
@@ -27,7 +27,7 @@ const params: IPaletteComponents = [
         }}/>
     },
     {
-        id: 2, key: "InternalComponent", label: 'Internal Component', visualElement: <div style={{
+        id: 2, key: "internal-component-node", label: 'Internal Component', visualElement: <div style={{
             backgroundColor: 'white',
             border : '1px solid black',
             borderRadius: 6,
@@ -36,7 +36,7 @@ const params: IPaletteComponents = [
         }}/>
     },
     {
-        id: 3, key: "ExternalComponent", label: 'External Component', visualElement: <div style={{
+        id: 3, key: "external-component-node", label: 'External Component', visualElement: <div style={{
             backgroundColor: 'gray',
             border : '1px solid black',
             borderRadius: 6,
@@ -45,7 +45,7 @@ const params: IPaletteComponents = [
         }}/>
     },
     {
-        id: 4, key: "Comment", label: 'Comment', visualElement: <div style={{
+        id: 4, key: "comment-node", label: 'Comment', visualElement: <div style={{
             backgroundColor: 'yellow',
             border : '1px solid orange',
             borderRadius: 4,
@@ -55,14 +55,28 @@ const params: IPaletteComponents = [
 ];
 
 function componentBodyStyler(type:string) {
-    if (type === "UserComponent") {
+    if (type === "user-node") {
         return {
             component: <FontAwesomeIcon icon={faUser} color='rgb(0,120,155)'/>,
+            connections : {
+                source : [{
+                    name: "user-userneed-dependency",
+                    relativePos : {
+                        left: 0,
+                        top: 10
+                    }
+                }],
+                target : []
+            },
             deletable : true,
-            movable : true
+            movable : true,
         }
-    } else if (type === "UserNeedComponent") {
+    } else if (type === "user-need-node") {
         return {
+            connections : {
+                source : [],
+                target : ["user-userneed-dependency"]
+            },
             deletable: true,
             movable : true,
             style: {
@@ -75,7 +89,7 @@ function componentBodyStyler(type:string) {
                 width: 8,
             }
         }
-    } else if (type === "ExternalComponent") {
+    } else if (type === "external-component-node") {
         return {
             deletable: true,
             movable : true,
@@ -89,7 +103,7 @@ function componentBodyStyler(type:string) {
                 width: 8,
             }
         }
-    } else if (type === "Comment") {
+    } else if (type === "comment-node") {
         return {
             deletable: true,
             movable : true,
@@ -123,6 +137,9 @@ function componentBodyStyler(type:string) {
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 import MapEditorStore from './stores/MapEditorStore';
 MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
+
+jsPlumbInstance.registerConnectionType("simple-dependency", {});
+jsPlumbInstance.registerConnectionType("user-userneed-dependency", {});
 
 class App extends React.Component {
     public render() {
