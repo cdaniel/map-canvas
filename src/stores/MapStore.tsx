@@ -76,6 +76,7 @@ class MapStore extends FluxStore<IMapState> {
         super(dispatcher, onDispatch, () => ({
             connections : [
                 {
+                    label: 'important',
                     scope: 'user-userneed-dependency',
                     sourceId: 'id1',
                     targetId: 'id2'

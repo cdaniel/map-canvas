@@ -6,6 +6,7 @@ import {Connection, ElementGroupRef, ElementRef, Endpoint, jsPlumbInstance} from
 
 export interface IConnectionProps {
     jsPlumbInstance:jsPlumbInstance,
+    label? : string,
     scope: string,
     sourceId: string,
     targetId: string,
@@ -35,6 +36,7 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
 
             detachable : false,
             endpoints: [computedStyle.endpoint, computedStyle.endpoint],
+            overlays: [[ "Label", {labelStyle: {padding:1, font:'11px  sans-serif'}, label:"", id:'Label'}]],
             paintStyle : computedStyle.endpointStyle,
             scope: this.props.scope,
             source:this.props.sourceId,
@@ -59,6 +61,11 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
     }
 
     public componentDidUpdate = () => {
+        if(this.state.connection && this.props.label){
+            this.state.connection.getOverlay('Label').setLabel(this.props.label);
+        } else if (this.state.connection) {
+            this.state.connection.getOverlay('Label').setLabel("");
+        }
         this.jsPlumbInstance.revalidate(this.props.sourceId);
         this.jsPlumbInstance.revalidate(this.props.targetId);
     }
