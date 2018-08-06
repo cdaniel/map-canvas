@@ -14,6 +14,7 @@ export class BlurAllEvent extends TypedEvent<any> {}
 export class BlurNodeEvent extends TypedEvent<any> {}
 export class ScopeActivatedEvent extends TypedEvent<any> {}
 export class ScopeDectivatedEvent extends TypedEvent<any> {}
+export class ConnectionSendForProcessing extends TypedEvent<any> {}
 
 
 export function startDrag() {
@@ -48,7 +49,10 @@ export function scopeDragActivated(scopeId:string, sourceId:string){
     MapEditorDispatcher.dispatch(new ScopeActivatedEvent({scopeId, sourceId}));
 }
 
-export function scopeDragDectivated(scopeId:string){
-    MapEditorDispatcher.dispatch(new ScopeDectivatedEvent({scopeId}));
+export function scopeDragDectivated(scopeId:string, targetId:string){
+    MapEditorDispatcher.dispatch(new ScopeDectivatedEvent({scopeId, targetId}));
+}
 
+export function turnOffRecentDropTarget(){
+    MapEditorDispatcher.dispatch(new ConnectionSendForProcessing(null));
 }

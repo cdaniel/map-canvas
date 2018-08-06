@@ -3,7 +3,7 @@ import FluxStore from './FluxStore';
 
 import {jsPlumbInstance} from "jsplumb";
 import {
-    BlurAllEvent, BlurNodeEvent,
+    BlurAllEvent, BlurNodeEvent, ConnectionSendForProcessing,
     DragStartedEvent,
     DragStoppedEvent,
     FocusAddNodeEvent,
@@ -58,7 +58,15 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 } ;
                 this.emitChange();
             } else if (action instanceof ScopeDectivatedEvent){
+                // drag was stopped, but we have to remember WHERE it was stored. If it was stopped on the target node
+                // the node will toggle the target state before the connection is processed. We have to postpone that,
+                // so we store the target id and clean it after the connection is established. Or not.
+                this.state.nodeDroppedOntoId = action.payload.targetId;
                 this.state.activeScope = null;
+                this.emitChange();
+            } else if (action instanceof ConnectionSendForProcessing){
+                // connection captured, clear the target flag
+                this.state.nodeDroppedOntoId = null;
                 this.emitChange();
             }
         }
@@ -69,6 +77,7 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
             height: 0,
             input: null,
             jsPlumbInstance : null,
+            nodeDroppedOntoId:null,
             width: 0,
         }));
     }

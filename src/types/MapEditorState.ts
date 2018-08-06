@@ -6,6 +6,7 @@ interface IMapEditorState {
     height: number,
     input: HTMLDivElement | null,
     jsPlumbInstance : jsPlumbInstance | null,
+    nodeDroppedOntoId : string | null
     focusedNodes : string[],
     width: number,
 }

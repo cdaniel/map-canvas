@@ -23,6 +23,7 @@ export interface INodeProps {
     jsPlumbInstance: jsPlumbInstance,
     multiNodeFocus : boolean, // indicates whether there is more than one node selected in a map
     name : string,
+    nodeDroppedOntoId : string | any, // if a node is dropped on, we have to keep it as a target until the connection is recorded
     parentHeight: number,
     parentWidth: number,
     styler:(type:string) => HTMLDivElement | any | null,
@@ -69,12 +70,18 @@ export default class Node extends React.Component<INodeProps, any> {
     }
 
     public shouldBecomeDragTarget(){
-        if(!this.state || !this.state!.connections || !this.state!.connections.target || !this.state!.connections.target.length || this.props.activeDragScope === null){
+        if(!this.state || !this.state!.connections || !this.state!.connections.target || !this.state!.connections.target.length){
             return false;
         }
-        for(const dropTarget of this.state!.connections.target){
-            if(dropTarget === this.props.activeDragScope.scopeId && this.props.id !== this.props.activeDragScope.sourceId /* do not hint self*/){
-                return true;
+        // keep state until connection is processed.
+        if(this.props.nodeDroppedOntoId === this.props.id){
+            return true;
+        }
+        if(this.props.activeDragScope) {
+            for (const dropTarget of this.state!.connections.target) {
+                if (dropTarget === this.props.activeDragScope.scopeId && (this.props.id !== this.props.activeDragScope.sourceId) /* do not hint self*/) {
+                    return true;
+                }
             }
         }
         return false;
@@ -93,7 +100,11 @@ export default class Node extends React.Component<INodeProps, any> {
 
         if(this.shouldBecomeDragTarget()){
             componentStyle = _.extend(componentStyle, {boxShadow:'0 0 5px 5px ' + menuItemHighlightColor});
-            this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope!.scopeId});
+            if(this.props.activeDragScope){
+                this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope!.scopeId});
+            }
+        } else if (this.input){
+            this.jsPlumbInstance.unmakeTarget(this.input as any);
         }
 
 

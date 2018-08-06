@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="810fa7f7-7a52-4d1a-b6d2-0877d3ee7e6e" name="Default" comment="Highlight target nodes&#10;&#10;TODO:&#10;* specify target endpoint&#10;* separate the endpoint of the connection stub&#10;* start managing connections&#10;* handle connections styles">
+    <list default="true" id="810fa7f7-7a52-4d1a-b6d2-0877d3ee7e6e" name="Default" comment="Improve which nodes are presented as the drop targets.&#10;When multiple nodes are selected, show only the move menu.&#10;&#10;TODO:&#10;* start managing connections&#10;* handle connections styles">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/MapActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/MapActions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/actions/MapEditorActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/MapEditorActions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/MapCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MapCanvas.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Node.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Node.tsx" afterDir="false" />
@@ -45,9 +45,9 @@
           <entry key="css" value="58" />
           <entry key="js" value="113" />
           <entry key="json" value="3" />
-          <entry key="ts" value="3160" />
-          <entry key="tsx" value="13777" />
-          <entry key="txt" value="959" />
+          <entry key="ts" value="3940" />
+          <entry key="tsx" value="14900" />
+          <entry key="txt" value="1097" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
@@ -55,9 +55,9 @@
           <entry key="CSS" value="58" />
           <entry key="JSON" value="3" />
           <entry key="JavaScript" value="113" />
-          <entry key="PLAIN_TEXT" value="960" />
-          <entry key="TypeScript" value="3159" />
-          <entry key="TypeScript JSX" value="13777" />
+          <entry key="PLAIN_TEXT" value="1098" />
+          <entry key="TypeScript" value="3939" />
+          <entry key="TypeScript JSX" value="14900" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -67,7 +67,7 @@
           <entry key="html" value="2" />
           <entry key="js" value="2" />
           <entry key="json" value="3" />
-          <entry key="ts" value="48" />
+          <entry key="ts" value="50" />
           <entry key="tsx" value="21" />
         </counts>
       </usages-collector>
@@ -78,7 +78,7 @@
           <entry key="JSON" value="3" />
           <entry key="JavaScript" value="2" />
           <entry key="PLAIN_TEXT" value="4" />
-          <entry key="TypeScript" value="45" />
+          <entry key="TypeScript" value="47" />
           <entry key="TypeScript JSX" value="21" />
         </counts>
       </usages-collector>
@@ -86,23 +86,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/App.tsx">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1082">
-              <caret line="40" column="39" lean-forward="true" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/components/Node.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="86" column="50" lean-forward="true" selection-start-line="86" selection-start-column="50" selection-end-line="86" selection-end-column="50" />
+            <state relative-caret-position="297">
+              <caret line="106" column="65" selection-start-line="106" selection-start-column="65" selection-end-line="106" selection-end-column="65" />
               <folding>
                 <element signature="e#47#138#0" expanded="true" />
                 <element signature="e#291#326#0" expanded="true" />
@@ -111,11 +99,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/components/MapCanvas.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="214" column="53" selection-start-line="214" selection-start-column="53" selection-end-line="214" selection-end-column="53" />
+            <state relative-caret-position="281">
+              <caret line="223" column="36" selection-start-line="223" selection-start-column="36" selection-end-line="223" selection-end-column="36" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
                 <element signature="e#175#215#0" expanded="true" />
@@ -136,8 +124,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/actions/MapEditorActions.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="461">
-              <caret line="47" column="53" lean-forward="true" selection-start-line="47" selection-start-column="53" selection-end-line="47" selection-end-column="53" />
+            <state relative-caret-position="476">
+              <caret line="51" selection-start-line="51" selection-end-line="51" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -148,9 +136,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/actions/MapActions.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="73" lean-forward="true" selection-start-line="12" selection-start-column="73" selection-end-line="12" selection-end-column="73" />
+            <state relative-caret-position="495">
+              <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
               <folding>
+                <element signature="n#!!doc" expanded="true" />
                 <element signature="e#42#124#0" expanded="true" />
               </folding>
             </state>
@@ -160,8 +149,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/stores/MapEditorStore.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="65" column="20" lean-forward="true" selection-start-line="65" selection-start-column="12" selection-end-line="65" selection-end-column="23" />
+            <state relative-caret-position="484">
+              <caret line="77" column="24" lean-forward="true" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -181,8 +170,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/types/MapEditorState.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="48" selection-start-line="3" selection-start-column="48" selection-end-line="3" selection-end-column="48" />
+            <state relative-caret-position="120">
+              <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -210,8 +199,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>dragOptions</find>
-      <find>connect</find>
       <find>offsets</find>
       <find>updateOffset</find>
       <find>updateOffset(</find>
@@ -240,6 +227,8 @@
       <find>this.props.focused</find>
       <find>onChange</find>
       <find>activeDragScope</find>
+      <find>MapActions</find>
+      <find>dr</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -274,14 +263,14 @@
         <option value="$PROJECT_DIR$/src/types/MapState.ts" />
         <option value="$PROJECT_DIR$/node_modules/jsplumb/dist/js/jsplumb.js" />
         <option value="$PROJECT_DIR$/src/components/Palette.tsx" />
-        <option value="$PROJECT_DIR$/src/actions/MapActions.ts" />
         <option value="$PROJECT_DIR$/src/stores/MapStore.tsx" />
         <option value="$PROJECT_DIR$/src/App.tsx" />
-        <option value="$PROJECT_DIR$/src/actions/MapEditorActions.ts" />
-        <option value="$PROJECT_DIR$/src/stores/MapEditorStore.ts" />
         <option value="$PROJECT_DIR$/src/types/MapEditorState.ts" />
-        <option value="$PROJECT_DIR$/src/components/Node.tsx" />
+        <option value="$PROJECT_DIR$/src/actions/MapEditorActions.ts" />
+        <option value="$PROJECT_DIR$/src/actions/MapActions.ts" />
+        <option value="$PROJECT_DIR$/src/stores/MapEditorStore.ts" />
         <option value="$PROJECT_DIR$/src/components/MapCanvas.tsx" />
+        <option value="$PROJECT_DIR$/src/components/Node.tsx" />
       </list>
     </option>
   </component>
@@ -428,7 +417,7 @@
       <workItem from="1533274343830" duration="19480000" />
       <workItem from="1533304050936" duration="568000" />
       <workItem from="1533305796356" duration="622000" />
-      <workItem from="1533307057503" duration="1959000" />
+      <workItem from="1533307057503" duration="8598000" />
     </task>
     <task id="LOCAL-00001" summary="Properly scale editor canvas">
       <created>1533024945714</created>
@@ -507,11 +496,18 @@
       <option name="project" value="LOCAL" />
       <updated>1533301869959</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Improve which nodes are presented as the drop targets.&#10;When multiple nodes are selected, show only the move menu.&#10;&#10;TODO:&#10;* start managing connections&#10;* handle connections styles">
+      <created>1533541505031</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1533541505031</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91753000" />
+    <option name="totallyTimeSpent" value="98392000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="45" y="23" width="2515" height="1057" extended-state="6" />
@@ -521,9 +517,9 @@
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" sideWeight="0.49839616" visible="true" weight="0.26839378" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.659583" weight="0.26839378" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4997996" weight="0.34507772" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49839616" weight="0.26839378" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.659182" visible="true" weight="0.26839378" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49959904" weight="0.34507772" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -531,7 +527,7 @@
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="TypeScript" order="9" sideWeight="0.58019245" weight="0.253886" />
       <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49398556" weight="0.32953367" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50160384" side_tool="true" visible="true" weight="0.26839378" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.34081796" side_tool="true" visible="true" weight="0.26839378" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -558,7 +554,8 @@
     <MESSAGE value="Reasonably working nodes deletion.&#10;&#10;TODO: connections" />
     <MESSAGE value="Node styler cached in the state.&#10;&#10;TODO: connections" />
     <MESSAGE value="Highlight target nodes&#10;&#10;TODO:&#10;* specify target endpoint&#10;* separate the endpoint of the connection stub&#10;* start managing connections&#10;* handle connections styles" />
-    <option name="LAST_COMMIT_MESSAGE" value="Highlight target nodes&#10;&#10;TODO:&#10;* specify target endpoint&#10;* separate the endpoint of the connection stub&#10;* start managing connections&#10;* handle connections styles" />
+    <MESSAGE value="Improve which nodes are presented as the drop targets.&#10;When multiple nodes are selected, show only the move menu.&#10;&#10;TODO:&#10;* start managing connections&#10;* handle connections styles" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improve which nodes are presented as the drop targets.&#10;When multiple nodes are selected, show only the move menu.&#10;&#10;TODO:&#10;* start managing connections&#10;* handle connections styles" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/tsconfig.test.json">
@@ -694,13 +691,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/jsplumb/index.d.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1920">
-          <caret line="128" column="18" selection-start-line="128" selection-start-column="8" selection-end-line="128" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/App.tsx">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1082">
@@ -718,37 +708,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/actions/MapActions.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="73" lean-forward="true" selection-start-line="12" selection-start-column="73" selection-end-line="12" selection-end-column="73" />
-          <folding>
-            <element signature="e#42#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dispatcher/MapEditorDispatcher.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/actions/MapEditorActions.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="461">
-          <caret line="47" column="53" lean-forward="true" selection-start-line="47" selection-start-column="53" selection-end-line="47" selection-end-column="53" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/MapEditorState.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="48" selection-start-line="3" selection-start-column="48" selection-end-line="3" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -769,34 +732,69 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/jsplumb/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="584">
+          <caret line="192" column="8" selection-start-line="192" selection-start-column="8" selection-end-line="192" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/types/MapEditorState.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/stores/MapEditorStore.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="65" column="20" lean-forward="true" selection-start-line="65" selection-start-column="12" selection-end-line="65" selection-end-column="23" />
+        <state relative-caret-position="484">
+          <caret line="77" column="24" lean-forward="true" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/Node.tsx">
+    <entry file="file://$PROJECT_DIR$/src/actions/MapEditorActions.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="86" column="50" lean-forward="true" selection-start-line="86" selection-start-column="50" selection-end-line="86" selection-end-column="50" />
+        <state relative-caret-position="476">
+          <caret line="51" selection-start-line="51" selection-end-line="51" />
           <folding>
-            <element signature="e#47#138#0" expanded="true" />
-            <element signature="e#291#326#0" expanded="true" />
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/MapActions.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#42#124#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/MapCanvas.tsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="214" column="53" selection-start-line="214" selection-start-column="53" selection-end-line="214" selection-end-column="53" />
+        <state relative-caret-position="281">
+          <caret line="223" column="36" selection-start-line="223" selection-start-column="36" selection-end-line="223" selection-end-column="36" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
             <element signature="e#175#215#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/Node.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="106" column="65" selection-start-line="106" selection-start-column="65" selection-end-line="106" selection-end-column="65" />
+          <folding>
+            <element signature="e#47#138#0" expanded="true" />
+            <element signature="e#291#326#0" expanded="true" />
           </folding>
         </state>
       </provider>

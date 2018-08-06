@@ -10,6 +10,7 @@ import MapEditorState from "../types/MapEditorState";
 
 import MapStore from '../stores/MapStore';
 
+import * as MapActions from "../actions/MapActions";
 import * as MapEditorActions from '../actions/MapEditorActions';
 import MapEditorStore from '../stores/MapEditorStore';
 
@@ -207,17 +208,28 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             return;
         }
         this.jsPlumbInstance.setContainer(this.input);
+
         this.jsPlumbInstance.unbind('connectionDrag', this.connectionDragStarted);
         this.jsPlumbInstance.unbind('connectionDragStop', this.connectionDragStopped);
+        this.jsPlumbInstance.unbind('beforeDrop', this.beforeDropListener);
+
         this.jsPlumbInstance.bind('connectionDrag', this.connectionDragStarted);
         this.jsPlumbInstance.bind('connectionDragStop', this.connectionDragStopped);
+        this.jsPlumbInstance.bind('beforeDrop', this.beforeDropListener);
     }
     private connectionDragStarted = (event: any) => {
         MapEditorActions.scopeDragActivated(event.scope, event.sourceId);
     }
     private connectionDragStopped = (event: any) => {
-        MapEditorActions.scopeDragDectivated(event.scope);
+        MapEditorActions.scopeDragDectivated(event.scope, event.targetId);
     }
+
+    private beforeDropListener = (connection: any) => {
+        MapActions.connectionInitiated(connection.scope, connection.sourceId, connection.targetId);
+        MapEditorActions.turnOffRecentDropTarget();
+        return false;
+    }
+
     private onResize = (width: number, height: number) => {
         MapEditorActions.resize(width, height, this.input);
     }
@@ -233,7 +245,8 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance}
                               evolution={node.evolution} visibility={node.visibility} parentWidth={this.state.width}
                               parentHeight={this.state.height} styler={this.props.styler} type={node.type}
-                              focused={focused} activeDragScope={this.state.activeScope} multiNodeFocus={this.state.focusedNodes.length > 1}/>);
+                              focused={focused} activeDragScope={this.state.activeScope} multiNodeFocus={this.state.focusedNodes.length > 1}
+                              nodeDroppedOntoId={this.state.nodeDroppedOntoId}/>);
         }
         return result;
     }
