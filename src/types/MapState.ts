@@ -7,6 +7,11 @@ interface IMapState {
         type: string,
         visibility : number,
         }>;
+    connections : Array<{
+       scope : string,
+       sourceId : string,
+       targetId : string
+    }>;
 }
 
 export default IMapState;

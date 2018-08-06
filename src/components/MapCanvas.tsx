@@ -16,6 +16,7 @@ import MapEditorStore from '../stores/MapEditorStore';
 
 import {SyntheticEvent} from "react";
 import Node from './Node';
+import NodeConnection from "./NodeConnection";
 
 const axisSupport = {
     border: '1px dashed silver',
@@ -123,8 +124,9 @@ const commodityStyle = {
 };
 
 export interface IProps {
+    connectionStyler : (type:string) => any | null,
     jsPlumbInstance: jsPlumbInstance,
-    styler: (type: string) => HTMLDivElement | any | null
+    styler: (type: string) => HTMLDivElement | any | null,
 };
 
 export default class MapCanvas extends React.Component<IProps, MapEditorState> {
@@ -150,8 +152,12 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         MapEditorStore.removeChangeListener(this.onChange);
         MapStore.addChangeListener(this.onChange);
     }
+    public componentDidUpdate = () => {
+        this.jsPlumbInstance.setSuspendDrawing(false, true);
+    }
 
     public render() {
+        this.jsPlumbInstance.setSuspendDrawing(true);
         let realCanvasDivStyle = {
             bottom: 22,
             left: 4,
@@ -169,10 +175,10 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         }
 
         let nodes = [] as any[];
-        if (this.state.width === 0 || this.state.height === 0) {
-            console.log('miss');
-        } else {
+        let connections = [] as any[];
+        if (this.state.width !== 0 && this.state.height !== 0) {
             nodes = this.renderNodes(MapStore.getState().nodes);
+            connections = this.renderConnections(MapStore.getState().connections);
         }
 
         return (
@@ -182,6 +188,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
                          ref={input => this.setContainer(input)} onClick={this.onClickHandler}>
                         <ReactResizeDetector handleWidth={true} handleHeight={true} onResize={this.onResize}/>
                         {nodes}
+                        {connections}
                     </div>
                     <div style={axisX}>
                         <div style={genesisStyle}>Genesis</div>
@@ -251,4 +258,11 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         return result;
     }
 
+    private renderConnections(connections: any) {
+        const result = [];
+        for(const connectionDescription of connections){
+            result.push(<NodeConnection jsPlumbInstance={this.jsPlumbInstance} scope={connectionDescription.scope} sourceId={connectionDescription.sourceId} styler={this.props.connectionStyler} targetId={connectionDescription.targetId}/>)
+        }
+        return result;
+    }
 }

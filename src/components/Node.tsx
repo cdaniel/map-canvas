@@ -176,7 +176,6 @@ export default class Node extends React.Component<INodeProps, any> {
         }
         this.reconcileDragConnectionStubs();
         this.updateMovableState();
-
     }
 
     public componentDidMount(){

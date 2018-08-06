@@ -4,7 +4,13 @@ import FluxStore from './FluxStore';
 import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapState from '../types/MapState';
 
-import {InitiateNodeDeletionEvent, LoadMapEvent, NewNodeIntentEvent, NodeDraggedEvent} from "../actions/MapActions";
+import {
+    InitiateConnection,
+    InitiateNodeDeletionEvent,
+    LoadMapEvent,
+    NewNodeIntentEvent,
+    NodeDraggedEvent
+} from "../actions/MapActions";
 
 function makeid() {
     let text = "";
@@ -48,15 +54,25 @@ class MapStore extends FluxStore<IMapState> {
                 const id = action.payload.id;
                 this.state.nodes = this.state.nodes.filter(node => node.id !== id);
                 this.emitChange();
+            } else if (action instanceof InitiateConnection){
+                console.log('TODO');
+                this.emitChange();
             }
         }
         super(dispatcher, onDispatch, () => ({
+            connections : [
+                {
+                    scope: 'node-node-dependency',
+                    sourceId: 'id1',
+                    targetId: 'id2'
+                }
+            ],
             nodes: [{
                 evolution: 0.5,
                 id: 'id1',
                 name: 'first name',
                 type: 'user-node',
-                visibility: 0.5,
+                visibility: 0.13,
 
             },
                 {
@@ -64,7 +80,7 @@ class MapStore extends FluxStore<IMapState> {
                     id: 'id2',
                     name: 'second name',
                     type: 'user-need-node',
-                    visibility: 0.2,
+                    visibility: 0.5,
 
                 },
                 {

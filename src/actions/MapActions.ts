@@ -9,6 +9,7 @@ export class LoadMapEvent extends TypedEvent<any> {};
 export class NodeDraggedEvent extends TypedEvent<any> {}
 
 export class InitiateNodeDeletionEvent extends TypedEvent<any> {}
+export class InitiateConnection extends TypedEvent<any> {}
 
 export function initiateNewNodeCreationProcess(type:string, coords:any) {
     MapEditorDispatcher.dispatch(new NewNodeIntentEvent({
@@ -28,4 +29,8 @@ export function nodeWasMoved(id:string, coords:any){
 
 export function initiateNodeDeletion(id:string){
     MapEditorDispatcher.dispatch(new InitiateNodeDeletionEvent({id}));
+}
+
+export function connectionInitiated(scope: any, sourceId: string | any, targetId: string) {
+    MapEditorDispatcher.dispatch(new InitiateConnection({scope, sourceId, targetId}));
 }

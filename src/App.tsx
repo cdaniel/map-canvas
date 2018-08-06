@@ -200,6 +200,18 @@ function componentBodyStyler(type:string) {
     }
 }
 
+function nodeConnectionStyler(type:string){
+    if(type === 'node-node-dependency'){
+        return {
+            connector: ["Straight",{gap: 1}],
+            endpoint:[ "Blank", { radius:1 }],
+            sourceAnchors : ['Bottom'],
+            targetAnchors : ['Top']
+        }
+    }
+    return null;
+}
+
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 import MapEditorStore from './stores/MapEditorStore';
 MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
@@ -217,7 +229,7 @@ class App extends React.Component {
                 </header>
                 <div style={{display: 'flex', flex: "1 1 auto",}}>
                     <Palette components={params} jsPlumbInstance={jsPlumbInstance}/>
-                    <MapCanvas jsPlumbInstance={jsPlumbInstance} styler={componentBodyStyler}/>
+                    <MapCanvas connectionStyler={nodeConnectionStyler} jsPlumbInstance={jsPlumbInstance} styler={componentBodyStyler} />
                 </div>
             </div>
         );
