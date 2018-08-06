@@ -17,10 +17,11 @@ import * as MapActions from "../actions/MapActions";
 import MapEditorStore from "../stores/MapEditorStore";
 
 export interface INodeProps {
-    activeDragScope : string | null,
+    activeDragScope : {sourceId:string, scopeId:string} | null,
     evolution : number,
     id : string,
     jsPlumbInstance: jsPlumbInstance,
+    multiNodeFocus : boolean, // indicates whether there is more than one node selected in a map
     name : string,
     parentHeight: number,
     parentWidth: number,
@@ -68,11 +69,11 @@ export default class Node extends React.Component<INodeProps, any> {
     }
 
     public shouldBecomeDragTarget(){
-        if(!this.state || !this.state!.connections || !this.state!.connections.target || !this.state!.connections.target.length){
+        if(!this.state || !this.state!.connections || !this.state!.connections.target || !this.state!.connections.target.length || this.props.activeDragScope === null){
             return false;
         }
         for(const dropTarget of this.state!.connections.target){
-            if(dropTarget === this.props.activeDragScope){
+            if(dropTarget === this.props.activeDragScope.scopeId && this.props.id !== this.props.activeDragScope.sourceId /* do not hint self*/){
                 return true;
             }
         }
@@ -92,7 +93,7 @@ export default class Node extends React.Component<INodeProps, any> {
 
         if(this.shouldBecomeDragTarget()){
             componentStyle = _.extend(componentStyle, {boxShadow:'0 0 5px 5px ' + menuItemHighlightColor});
-            this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope});
+            this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope!.scopeId});
         }
 
 
@@ -100,7 +101,7 @@ export default class Node extends React.Component<INodeProps, any> {
         let moveComponent = null;
         let deleteComponent = null;
         if(this.props.focused){
-            dragConnectionComponents = this.prepareDragConnectionComponents();
+            // many nodes, many focused - we can only move them
             if(this.state.movable){
                 const color = this.state.hoveredMenu === 'moveMenuItem' ? menuItemHighlightColor : menuItemNormalColor;
                 moveComponent = <div id={this.props.id + '-moveMenuItemParent'} key={this.props.id + '-moveMenuItemParent'} style={{position:'relative', width:0, height:0}}>
@@ -109,6 +110,10 @@ export default class Node extends React.Component<INodeProps, any> {
                     </div>
                 </div>
             }
+        }
+        if(this.props.focused && !this.props.multiNodeFocus){
+            // single node focused, full menu
+            dragConnectionComponents = this.prepareDragConnectionComponents();
             if(this.state.deletable){
                 const color = this.state.hoveredMenu === 'deleteMenuItem' ? 'orange' : menuItemNormalColor;
                 deleteComponent = <div id={this.props.id + '-deleteMenuItemParent'} key={this.props.id + '-deleteMenuItemParent'} style={{position:'relative', width:0, height:0}}>
@@ -211,7 +216,9 @@ export default class Node extends React.Component<INodeProps, any> {
             this.jsPlumbInstance.revalidate(this.props.id + "-" + connectionDragStarter.name + '-parentMenu');
             this.jsPlumbInstance.revalidate(this.props.id + "-" + connectionDragStarter.name + '-parentMenuItem');
         }
-        if(this.props.focused && this.dependencyStubs.length === 0){
+
+        // only single nodes can get the dependency connection stub
+        if(this.props.focused && this.props.multiNodeFocus === false && this.dependencyStubs.length === 0 ){
             for(const connectionDragStarter of this.state.connections.source) {
                 const parentName = this.props.id + "-" + connectionDragStarter.name + '-parentMenuItem';
                 const newSourceEndpointOptions = connectionDragStarter.sourceEndpoint;
@@ -237,7 +244,8 @@ export default class Node extends React.Component<INodeProps, any> {
     public componentWillReceiveProps(nextProps: INodeProps){
         this.computedLookUpdate(nextProps);
 
-        if(this.props.focused && !nextProps.focused){
+        if( (this.props.focused && !this.props.multiNodeFocus /* single node focused */ && !nextProps.focused /* will be unfocused */)
+        || (this.props.focused && !this.props.multiNodeFocus /* single node focused */ && nextProps.multiNodeFocus /* will become a part of focus group */)){
 
             for(const dependencyStub of this.dependencyStubs) {
                 this.jsPlumbInstance.deleteConnection(dependencyStub.connection);

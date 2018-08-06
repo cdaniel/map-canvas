@@ -84,8 +84,24 @@ function componentBodyStyler(type:string) {
     } else if (type === "user-need-node") {
         return {
             connections : {
-                source : [],
-                target : ["user-userneed-dependency"]
+                source : [{
+                    name: "userneed-component-dependency",
+                    relativePos : {
+                        left: 5,
+                        top: 40
+                    },
+                    sourceEndpoint : {
+                        connector: ["Straight",{gap: 1}],
+                        endpoint:[ "Blank", { radius:1 }],
+                        isSource:true,
+                    },
+                    targetEndpoint : {
+                        endpoint:[ "Dot", { radius:5 } ],
+                        isTarget:true,
+                        reattach:true
+                    }
+                }],
+                target : ["user-userneed-dependency", "userneed-component-dependency"]
             },
             deletable: true,
             movable : true,
@@ -101,6 +117,26 @@ function componentBodyStyler(type:string) {
         }
     } else if (type === "external-component-node") {
         return {
+            connections : {
+                source : [{
+                    name: "node-node-dependency",
+                    relativePos : {
+                        left: 5,
+                        top: 40
+                    },
+                    sourceEndpoint : {
+                        connector: ["Straight",{gap: 1}],
+                        endpoint:[ "Blank", { radius:1 }],
+                        isSource:true,
+                    },
+                    targetEndpoint : {
+                        endpoint:[ "Dot", { radius:5 } ],
+                        isTarget:true,
+                        reattach:true
+                    }
+                }],
+                target : ["userneed-component-dependency", "node-node-dependency"]
+            },
             deletable: true,
             movable : true,
             style: {
@@ -129,6 +165,26 @@ function componentBodyStyler(type:string) {
     } else  {
         // pretend type InternalComponent
         return {
+            connections : {
+                source : [{
+                    name: "node-node-dependency",
+                    relativePos : {
+                        left: 5,
+                        top: 40
+                    },
+                    sourceEndpoint : {
+                        connector: ["Straight",{gap: 1}],
+                        endpoint:[ "Blank", { radius:1 }],
+                        isSource:true,
+                    },
+                    targetEndpoint : {
+                        endpoint:[ "Dot", { radius:5 } ],
+                        isTarget:true,
+                        reattach:true
+                    }
+                }],
+                target : ["userneed-component-dependency", "node-node-dependency"]
+            },
             deletable: true,
             movable : true,
             style: {
@@ -139,7 +195,7 @@ function componentBodyStyler(type:string) {
                 maxHeight: 8,
                 maxWidth: 8,
                 width: 8,
-            },
+            }
         }
     }
 }

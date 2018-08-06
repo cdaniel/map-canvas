@@ -52,7 +52,10 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 }
                 this.emitChange();
             } else if (action instanceof ScopeActivatedEvent){
-                this.state.activeScope = action.payload.scopeId;
+                this.state.activeScope = {
+                    scopeId : action.payload.scopeId,
+                    sourceId : action.payload.sourceId,
+                } ;
                 this.emitChange();
             } else if (action instanceof ScopeDectivatedEvent){
                 this.state.activeScope = null;

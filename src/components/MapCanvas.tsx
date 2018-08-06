@@ -123,11 +123,10 @@ const commodityStyle = {
 
 export interface IProps {
     jsPlumbInstance: jsPlumbInstance,
-    styler:(type:string) => HTMLDivElement | any | null
+    styler: (type: string) => HTMLDivElement | any | null
 };
 
 export default class MapCanvas extends React.Component<IProps, MapEditorState> {
-
     private jsPlumbInstance: jsPlumbInstance;
     private input: HTMLDivElement | null;
 
@@ -137,9 +136,30 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         this.state = MapEditorStore.getState();
     }
 
+    public onClickHandler = (event: SyntheticEvent) => {
+        MapEditorActions.blurAll();
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    public componentWillMount = () => {
+        MapEditorStore.addChangeListener(this.onChange);
+        MapStore.addChangeListener(this.onChange);
+    }
+    public componentWillUnmount = () => {
+        MapEditorStore.removeChangeListener(this.onChange);
+        MapStore.addChangeListener(this.onChange);
+    }
+
     public render() {
-        let realCanvasDivStyle = {position: 'absolute', left: 4, right: 5, top: 5, bottom: 22, zIndex: 5} as CSSProperties;
-        if(this.state.dragInProgress){
+        let realCanvasDivStyle = {
+            bottom: 22,
+            left: 4,
+            position: 'absolute',
+            right: 5,
+            top: 5,
+            zIndex: 5
+        } as CSSProperties;
+        if (this.state.dragInProgress) {
             realCanvasDivStyle = _.extend(realCanvasDivStyle, {
                 border: '1px solid #00789b',
                 borderColor: "#00789b",
@@ -148,7 +168,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         }
 
         let nodes = [] as any[];
-        if(this.state.width === 0 || this.state.height === 0){
+        if (this.state.width === 0 || this.state.height === 0) {
             console.log('miss');
         } else {
             nodes = this.renderNodes(MapStore.getState().nodes);
@@ -180,37 +200,6 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             </div>
         );
     }
-
-    public onClickHandler = (event : SyntheticEvent) => {
-        MapEditorActions.blurAll();
-        event.preventDefault();
-        event.stopPropagation();
-    }
-
-    public componentWillMount = () => {
-        MapEditorStore.addChangeListener(this.onChange);
-        MapStore.addChangeListener(this.onChange);
-    }
-
-    public componentWillUnmount = () => {
-        MapEditorStore.removeChangeListener(this.onChange);
-        MapStore.addChangeListener(this.onChange);
-    }
-
-        // TODO: fix types
-    private renderNodes(nodes: any[]) {
-        const result = [];
-        for (const node of nodes) {
-            const focused = this.state.focusedNodes.indexOf(node.id) > -1;
-            result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance}
-                              evolution={node.evolution} visibility={node.visibility} parentWidth={this.state.width}
-                              parentHeight={this.state.height} styler={this.props.styler} type={node.type}
-                              focused={focused} activeDragScope={this.state.activeScope}/>);
-        }
-        return result;
-    }
-
-
     private setContainer = (input: HTMLDivElement | null) => {
         this.input = input;
         if (!this.input) {
@@ -223,23 +212,30 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         this.jsPlumbInstance.bind('connectionDrag', this.connectionDragStarted);
         this.jsPlumbInstance.bind('connectionDragStop', this.connectionDragStopped);
     }
-
-    private connectionDragStarted = (event:any) => {
-        MapEditorActions.scopeDragActivated(event.scope);
+    private connectionDragStarted = (event: any) => {
+        MapEditorActions.scopeDragActivated(event.scope, event.sourceId);
     }
-
-
-    private connectionDragStopped = (event:any) => {
+    private connectionDragStopped = (event: any) => {
         MapEditorActions.scopeDragDectivated(event.scope);
     }
-
-
     private onResize = (width: number, height: number) => {
-        MapEditorActions.resize(width,height, this.input);
+        MapEditorActions.resize(width, height, this.input);
     }
-
     private onChange = () => {
         this.setState(MapEditorStore.getState());
+    }
+
+    // TODO: fix types
+    private renderNodes(nodes: any[]) {
+        const result = [];
+        for (const node of nodes) {
+            const focused = this.state.focusedNodes.indexOf(node.id) > -1;
+            result.push(<Node id={node.id} key={node.id} name={node.name} jsPlumbInstance={this.jsPlumbInstance}
+                              evolution={node.evolution} visibility={node.visibility} parentWidth={this.state.width}
+                              parentHeight={this.state.height} styler={this.props.styler} type={node.type}
+                              focused={focused} activeDragScope={this.state.activeScope} multiNodeFocus={this.state.focusedNodes.length > 1}/>);
+        }
+        return result;
     }
 
 }

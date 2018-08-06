@@ -44,8 +44,8 @@ export function blurNode(id:string) {
     MapEditorDispatcher.dispatch(new BlurAllEvent({id}));
 }
 
-export function scopeDragActivated(scopeId:string){
-    MapEditorDispatcher.dispatch(new ScopeActivatedEvent({scopeId}));
+export function scopeDragActivated(scopeId:string, sourceId:string){
+    MapEditorDispatcher.dispatch(new ScopeActivatedEvent({scopeId, sourceId}));
 }
 
 export function scopeDragDectivated(scopeId:string){
