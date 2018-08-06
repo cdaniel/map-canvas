@@ -55,14 +55,28 @@ class MapStore extends FluxStore<IMapState> {
                 this.state.nodes = this.state.nodes.filter(node => node.id !== id);
                 this.emitChange();
             } else if (action instanceof InitiateConnection){
-                console.log('TODO');
-                this.emitChange();
+                let found = false;
+                for(const existingConnection of this.state.connections){
+                    if(existingConnection.scope === action.payload.scope
+                        && existingConnection.targetId === action.payload.targetId
+                        && existingConnection.sourceId === action.payload.sourceId){
+                        found = true;
+                    }
+                }
+                if(!found){
+                    this.state.connections.push({
+                        scope : action.payload.scope,
+                        sourceId : action.payload.sourceId,
+                        targetId: action.payload.targetId
+                    });
+                    this.emitChange();
+                }
             }
         }
         super(dispatcher, onDispatch, () => ({
             connections : [
                 {
-                    scope: 'node-node-dependency',
+                    scope: 'user-userneed-dependency',
                     sourceId: 'id1',
                     targetId: 'id2'
                 }

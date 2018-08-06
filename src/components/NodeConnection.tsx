@@ -32,12 +32,28 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
         const params = {
             anchors : [computedStyle.sourceAnchors, computedStyle.targetAnchors],
             connector: computedStyle.connector,
+
             detachable : false,
-            endpoint: computedStyle.endpoint,
+            endpoints: [computedStyle.endpoint, computedStyle.endpoint],
+            paintStyle : computedStyle.endpointStyle,
             scope: this.props.scope,
             source:this.props.sourceId,
             target:this.props.targetId,
         };
+        if(!params.paintStyle){
+            // @ts-ignore
+            params.paintStyle = {};
+        }
+        // @ts-ignore
+        if(!params.paintStyle.stroke){
+            params.paintStyle!.stroke = 1;
+            params.paintStyle!.strokeWidth = 1;
+        }
+
+        // @ts-ignore
+        params.paintStyle!.outlineStroke = 'transparent';
+        // @ts-ignore
+        params.paintStyle!.outlineWidth = 10;
 
         this.setState({connection:this.jsPlumbInstance.connect(params as any)});
     }
@@ -48,7 +64,8 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
     }
 
     public componentWillUnmount = () => {
-        this.jsPlumbInstance.detach(this.state.connection);
+        // this.jsPlumbInstance.detach(this.state.connection);
+        this.jsPlumbInstance.deleteConnection(this.state.connection);
         this.setState({connection:null});
     }
 }

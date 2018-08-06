@@ -201,10 +201,38 @@ function componentBodyStyler(type:string) {
 }
 
 function nodeConnectionStyler(type:string){
-    if(type === 'node-node-dependency'){
+    if(type === 'userneed-component-dependency'){
         return {
             connector: ["Straight",{gap: 1}],
             endpoint:[ "Blank", { radius:1 }],
+            endpointStyle : {
+
+                stroke : 'gray',
+                strokeWidth : 1
+            },
+            sourceAnchors : ['Bottom'],
+            targetAnchors : ['Top']
+        }
+    } else if (type === 'user-userneed-dependency'){
+        return {
+            connector: ["Straight",{gap: 1}],
+            endpoint:[ "Blank", { radius:1 }],
+            endpointStyle : {
+                dashstyle: '6 6',
+                stroke : 'gray',
+                strokeWidth : 1
+            },
+            sourceAnchors : ['Bottom'],
+            targetAnchors : ['Top']
+        }
+    } else if (type === 'node-node-dependency'){
+        return {
+            connector: ["Straight",{gap: 1}],
+            endpoint:[ "Blank", { radius:1 }],
+            endpointStyle : {
+                stroke : 'gray',
+                strokeWidth : 1
+            },
             sourceAnchors : ['Bottom'],
             targetAnchors : ['Top']
         }

@@ -99,7 +99,17 @@ export default class Node extends React.Component<INodeProps, any> {
         }
 
         if(this.shouldBecomeDragTarget()){
-            componentStyle = _.extend(componentStyle, {boxShadow:'0 0 5px 5px ' + menuItemHighlightColor});
+            componentStyle = _.extend(componentStyle, {boxShadow:'0 0 7px 7px ' + menuItemHighlightColor});
+            // @ts-ignore
+            componentStyle.width = componentStyle.width * 1.2;
+            // @ts-ignore
+            componentStyle.height = componentStyle.height * 1.2;
+            // @ts-ignore
+            componentStyle.maxWidth = componentStyle.maxWidth * 1.2;
+            // @ts-ignore
+            componentStyle.maxHeight = componentStyle.maxHeight * 1.2;
+            // @ts-ignore
+            componentStyle.borderRadius = componentStyle.borderRadius * 1.2;
             if(this.props.activeDragScope){
                 this.jsPlumbInstance.makeTarget(this.input as any, {isTarget:true, scope: this.props.activeDragScope!.scopeId});
             }
