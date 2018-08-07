@@ -71,7 +71,7 @@ function componentBodyStyler(type:string) {
                         isSource:true,
                     },
                     targetEndpoint : {
-                        endpoint:[ "Dot", { radius:5 } ],
+                        endpoint:[ "Dot", { radius:3 } ],
                         isTarget:true,
                         reattach:true
                     }
@@ -96,7 +96,7 @@ function componentBodyStyler(type:string) {
                         isSource:true,
                     },
                     targetEndpoint : {
-                        endpoint:[ "Dot", { radius:5 } ],
+                        endpoint:[ "Dot", { radius:4 } ],
                         isTarget:true,
                         reattach:true
                     }
@@ -130,7 +130,7 @@ function componentBodyStyler(type:string) {
                         isSource:true,
                     },
                     targetEndpoint : {
-                        endpoint:[ "Dot", { radius:5 } ],
+                        endpoint:[ "Dot", { radius:4 } ],
                         isTarget:true,
                         reattach:true
                     }
@@ -178,7 +178,7 @@ function componentBodyStyler(type:string) {
                         isSource:true,
                     },
                     targetEndpoint : {
-                        endpoint:[ "Dot", { radius:5 } ],
+                        endpoint:[ "Dot", { radius:4 } ],
                         isTarget:true,
                         reattach:true
                     }
@@ -204,7 +204,7 @@ function nodeConnectionStyler(type:string){
     if(type === 'userneed-component-dependency'){
         return {
             connector: ["Straight",{gap: 1}],
-            endpoint:[ "Blank", { radius:1 }],
+            endpoint:[ "Blank", { radius:1, gap: 1 }],
             endpointStyle : {
 
                 stroke : 'gray',
@@ -216,7 +216,7 @@ function nodeConnectionStyler(type:string){
     } else if (type === 'user-userneed-dependency'){
         return {
             connector: ["Straight",{gap: 1}],
-            endpoint:[ "Blank", { radius:1 }],
+            endpoint:[ "Blank", { radius:1, gap: 1 }],
             endpointStyle : {
                 dashstyle: '6 6',
                 stroke : 'gray',
@@ -228,7 +228,7 @@ function nodeConnectionStyler(type:string){
     } else if (type === 'node-node-dependency'){
         return {
             connector: ["Straight",{gap: 1}],
-            endpoint:[ "Blank", { radius:1 }],
+            endpoint:[ "Blank", { radius:1, gap : 1 }],
             endpointStyle : {
                 stroke : 'gray',
                 strokeWidth : 1
