@@ -261,9 +261,11 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
     private renderConnections(connections: any) {
         const result = [];
         for(const connectionDescription of connections){
+            const focused = this.state.focusedConnections.some(c => connectionDescription.sourceId === c.sourceId && connectionDescription.targetId === c.targetId && connectionDescription.scope === c.scope);
             result.push(<NodeConnection jsPlumbInstance={this.jsPlumbInstance} label={connectionDescription.label}
                                         scope={connectionDescription.scope} sourceId={connectionDescription.sourceId}
-                                        styler={this.props.connectionStyler} targetId={connectionDescription.targetId}/>)
+                                        styler={this.props.connectionStyler} targetId={connectionDescription.targetId}
+                                        focused={focused}/>)
         }
         return result;
     }

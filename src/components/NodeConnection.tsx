@@ -3,8 +3,10 @@ import * as React from 'react';
 // @ts-ignore
 import {Connection, ElementGroupRef, ElementRef, Endpoint, jsPlumbInstance} from "jsplumb";
 
+import * as MapEditorActions from '../actions/MapEditorActions'
 
 export interface IConnectionProps {
+    focused:boolean,
     jsPlumbInstance:jsPlumbInstance,
     label? : string,
     scope: string,
@@ -57,7 +59,12 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
         // @ts-ignore
         params.paintStyle!.outlineWidth = 10;
 
-        this.setState({connection:this.jsPlumbInstance.connect(params as any)});
+        const connection = this.jsPlumbInstance.connect(params as any);
+
+        this.setState({connection});
+        // @ts-ignore
+        connection.bind('click', this.clickHandler);
+
     }
 
     public componentDidUpdate = () => {
@@ -65,6 +72,17 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
             this.state.connection.getOverlay('Label').setLabel(this.props.label);
         } else if (this.state.connection) {
             this.state.connection.getOverlay('Label').setLabel("");
+        }
+        console.log(this.props.focused);
+        if(this.props.focused){
+            this.state.connection.hideOverlay('Label');
+            this.state.connection.addType('focused');
+            this.state.connection.addType(this.props.scope + '-focused');
+        } else {
+            this.state.connection.showOverlay('Label');
+            this.state.connection.removeType('focused');
+            this.state.connection.removeType(this.props.scope + '-focused');
+            console.log('show');
         }
         this.jsPlumbInstance.revalidate(this.props.sourceId);
         this.jsPlumbInstance.revalidate(this.props.targetId);
@@ -74,5 +92,20 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
         // this.jsPlumbInstance.detach(this.state.connection);
         this.jsPlumbInstance.deleteConnection(this.state.connection);
         this.setState({connection:null});
+    }
+
+    private clickHandler = (obj:any, e:any) => {
+        // e.preventDefault();
+        e.stopPropagation();
+        if(!this.props.focused){
+            MapEditorActions.focusConnection(this.props.sourceId, this.props.targetId, this.props.scope);
+            return
+        }
+        if(obj.component && obj.id !== 'Label'){ // non label overlay clicked
+            const connection = obj.component;
+            console.log(connection);
+            // TODO: do what needs to be done by respective overlay
+        }
+        MapEditorActions.blurConnection(this.props.sourceId, this.props.targetId, this.props.scope);
     }
 }

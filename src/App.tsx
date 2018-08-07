@@ -206,7 +206,6 @@ function nodeConnectionStyler(type:string){
             connector: ["Straight",{gap: 1}],
             endpoint:[ "Blank", { radius:1, gap: 1 }],
             endpointStyle : {
-
                 stroke : 'gray',
                 strokeWidth : 1
             },
@@ -244,8 +243,12 @@ const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
 import MapEditorStore from './stores/MapEditorStore';
 MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
 
-// jsPlumbInstance.registerConnectionType("simple-dependency", {});
-// jsPlumbInstance.registerConnectionType("user-userneed-dependency", {});
+jsPlumbInstance.registerConnectionType("focused", {
+    paintStyle:{strokeWidth:3},
+});
+jsPlumbInstance.registerConnectionType("user-userneed-dependency-focused", {
+    paintStyle:{dashstyle:'2 2'}
+});
 
 class App extends React.Component {
     public render() {

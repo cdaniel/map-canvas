@@ -3,10 +3,10 @@ import FluxStore from './FluxStore';
 
 import {jsPlumbInstance} from "jsplumb";
 import {
-    BlurAllEvent, BlurNodeEvent, ConnectionSendForProcessing,
+    BlurAllEvent, BlurConnectionEvent, BlurNodeEvent, ConnectionSendForProcessing,
     DragStartedEvent,
     DragStoppedEvent,
-    FocusAddNodeEvent,
+    FocusAddNodeEvent, FocusConnectionEvent,
     FocusNodeEvent,
     MapResizeEvent, ScopeActivatedEvent, ScopeDectivatedEvent
 } from "../actions/MapEditorActions";
@@ -35,13 +35,20 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 this.state.jsPlumbInstance!.clearDragSelection();
                 this.state.focusedNodes = [(action as FocusNodeEvent).payload.id];
                 this.state.jsPlumbInstance!.addToDragSelection((action as FocusNodeEvent).payload.id);
+
+                this.state.focusedConnections = [];
+
                 this.emitChange();
             } else if (action instanceof FocusAddNodeEvent){
                 this.state.focusedNodes.push((action as FocusNodeEvent).payload.id);
                 this.state.jsPlumbInstance!.addToDragSelection((action as FocusNodeEvent).payload.id);
+
+                this.state.focusedConnections = [];
+
                 this.emitChange();
             } else if (action instanceof  BlurAllEvent){
                 this.state.focusedNodes = [];
+                this.state.focusedConnections = [];
                 this.state.jsPlumbInstance!.clearDragSelection();
                 this.emitChange();
             } else if (action instanceof BlurNodeEvent){
@@ -50,6 +57,27 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 if(index > -1){
                     this.state.focusedNodes.splice(index,1);
                 }
+                this.emitChange();
+            } else if (action instanceof FocusConnectionEvent) {
+                // first - clear node selection
+                this.state.focusedNodes = [];
+                this.state.jsPlumbInstance!.clearDragSelection();
+                // focus on a single node
+                this.state.focusedConnections.push({
+                    scope: action.payload.scope,
+                    sourceId : action.payload.sourceId,
+                    targetId: action.payload.targetId
+                });
+                this.emitChange();
+            } else if (action instanceof BlurConnectionEvent) {
+                this.state.focusedConnections = this.state.focusedConnections.filter((connection)=>{
+                    if(connection.sourceId === action.payload.sourceId &&
+                    connection.targetId === action.payload.targetId
+                    && connection.scope === action.payload.scope){
+                        return false;
+                    }
+                    return true;
+                });
                 this.emitChange();
             } else if (action instanceof ScopeActivatedEvent){
                 this.state.activeScope = {
@@ -73,6 +101,7 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
         super(dispatcher, onDispatch, () => ({
             activeScope : null,
             dragInProgress: false,
+            focusedConnections: [],
             focusedNodes: [],
             height: 0,
             input: null,
