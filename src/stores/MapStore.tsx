@@ -5,7 +5,7 @@ import {Event, MapEditorDispatcher} from '../dispatcher/MapEditorDispatcher';
 import IMapState from '../types/MapState';
 
 import {
-    InitiateConnection,
+    InitiateConnection, InitiateConnectionDeletion, InitiateConnectionEdit,
     InitiateNodeDeletionEvent,
     LoadMapEvent,
     NewNodeIntentEvent,
@@ -71,6 +71,20 @@ class MapStore extends FluxStore<IMapState> {
                     });
                     this.emitChange();
                 }
+            } else if (action instanceof InitiateConnectionDeletion){
+                this.state.connections = this.state.connections.filter( c=>!( c.scope === action.payload.scope
+                    && c.targetId === action.payload.targetId
+                    && c.sourceId === action.payload.sourceId));
+                this.emitChange();
+            } else if (action instanceof InitiateConnectionEdit){
+                for(const existingConnection of this.state.connections){
+                    if(existingConnection.scope === action.payload.scope
+                        && existingConnection.targetId === action.payload.targetId
+                        && existingConnection.sourceId === action.payload.sourceId){
+                        existingConnection.label = makeid();
+                    }
+                }
+                this.emitChange();
             }
         }
         super(dispatcher, onDispatch, () => ({

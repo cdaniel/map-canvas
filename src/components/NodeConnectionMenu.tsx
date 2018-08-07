@@ -5,7 +5,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 export interface IProps {
     name: string,
     icon: any,
-    action:any
+    action:any,
+    connection:any
 }
 
 const menuItemNormalColor = 'gray';
@@ -22,7 +23,7 @@ export default class NodeConnectionMenu extends React.Component<IProps, any> {
     public render() {
         const highlightColor = this.props.name === 'delete' ? 'orange' : menuItemHighlightColor;
         const color = this.state.hoveredMenu ? highlightColor : menuItemNormalColor;
-        return <span id={this.props.name} key={this.props.name} onClick={this.props.action} onMouseEnter={this.onMouseOverFunction} onMouseLeave={this.onMouseLeaveFunction}
+        return <span id={this.props.name} key={this.props.name} onClick={this.clickWrapper()} onMouseEnter={this.onMouseOverFunction} onMouseLeave={this.onMouseLeaveFunction}
                      style={{zIndex:50, backgroundColor:'white', padding:2, margin:2}}>
                     <FontAwesomeIcon icon={this.props.icon} color={color}/>
                 </span>;
@@ -34,6 +35,15 @@ export default class NodeConnectionMenu extends React.Component<IProps, any> {
 
     public onMouseLeaveFunction = () => {
         this.setState({hoveredMenu : null});
+    }
+
+    public clickWrapper = () => {
+        const sourceId = this.props.connection.sourceId;
+        const targetId = this.props.connection.targetId;
+        const scope = this.props.connection.scope;
+        return () => {
+            this.props.action(sourceId, targetId, scope);
+        }
     }
 
 }

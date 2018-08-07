@@ -13,6 +13,10 @@ export class NodeDraggedEvent extends TypedEvent<any> {}
 export class InitiateNodeDeletionEvent extends TypedEvent<any> {}
 export class InitiateConnection extends TypedEvent<any> {}
 
+export class InitiateConnectionDeletion extends TypedEvent<any> {}
+
+export class InitiateConnectionEdit extends TypedEvent<any> {}
+
 export function initiateNewNodeCreationProcess(type:string, coords:any) {
     MapEditorDispatcher.dispatch(new NewNodeIntentEvent({
         coords, type,
@@ -37,10 +41,10 @@ export function connectionInitiated(scope: any, sourceId: string | any, targetId
     MapEditorDispatcher.dispatch(new InitiateConnection({scope, sourceId, targetId}));
 }
 
-export function initiateConnectionDeletion() {
-    console.log('initiate');
+export function initiateConnectionDeletion(sourceId:string, targetId :string, scope:string) {
+    MapEditorDispatcher.dispatch(new InitiateConnectionDeletion({scope, sourceId, targetId}));
 }
 
-export function initiateConnectionEdit() {
-    console.log('initiate');
+export function initiateConnectionEdit(sourceId:string, targetId :string, scope:string) {
+    MapEditorDispatcher.dispatch(new InitiateConnectionEdit({scope, sourceId, targetId}));
 }

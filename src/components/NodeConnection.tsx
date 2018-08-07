@@ -39,7 +39,7 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
     public buildCustomMenuOverlay = (menu:any) => {
         const menuItems = [];
         for(const menuEntry of menu){
-            menuItems.push(<NodeConnectionMenu name={menuEntry[0]} key={menuEntry[0]} action={menuEntry[2]} icon={menuEntry[1]}/>);
+            menuItems.push(<NodeConnectionMenu name={menuEntry[0]} key={menuEntry[0]} action={menuEntry[2]} icon={menuEntry[1]} connection={this.props}/>);
         }
         const menuDiv = <div>{menuItems}</div>;
         const root = document.createElement('div');

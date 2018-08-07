@@ -8,6 +8,7 @@ interface IMapState {
         visibility : number,
         }>;
     connections : Array<{
+       label?: string;
        scope : string,
        sourceId : string,
        targetId : string
