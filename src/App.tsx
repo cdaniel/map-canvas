@@ -4,12 +4,13 @@ import './App.css';
 import Palette, {IPaletteComponents} from './components/Palette';
 import logo from './logo.svg';
 
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faTrashAlt, faUser } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-
 
 import * as jsPlumb from "jsplumb";
 import MapCanvas from "./components/MapCanvas";
+
+import * as MapActions from "./actions/MapActions";
 
 const params: IPaletteComponents = [
     {
@@ -209,6 +210,10 @@ function nodeConnectionStyler(type:string){
                 stroke : 'gray',
                 strokeWidth : 1
             },
+            menu : [
+                ['edit', faEdit, MapActions.initiateConnectionEdit],
+                ['delete', faTrashAlt, MapActions.initiateConnectionDeletion]
+            ],
             sourceAnchors : ['Bottom'],
             targetAnchors : ['Top']
         }
@@ -221,6 +226,10 @@ function nodeConnectionStyler(type:string){
                 stroke : 'gray',
                 strokeWidth : 1
             },
+            menu : [
+                ['edit', faEdit, MapActions.initiateConnectionEdit],
+                ['delete', faTrashAlt, MapActions.initiateConnectionDeletion]
+            ],
             sourceAnchors : ['Bottom'],
             targetAnchors : ['Top']
         }
@@ -232,6 +241,10 @@ function nodeConnectionStyler(type:string){
                 stroke : 'gray',
                 strokeWidth : 1
             },
+            menu : [
+                ['edit', faEdit, MapActions.initiateConnectionEdit],
+                ['delete', faTrashAlt, MapActions.initiateConnectionDeletion]
+            ],
             sourceAnchors : ['Bottom'],
             targetAnchors : ['Top']
         }

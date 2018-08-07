@@ -1,0 +1,39 @@
+import * as React from 'react';
+
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+
+export interface IProps {
+    name: string,
+    icon: any,
+    action:any
+}
+
+const menuItemNormalColor = 'gray';
+
+const menuItemHighlightColor = 'rgb(0,120,155)';
+
+export default class NodeConnectionMenu extends React.Component<IProps, any> {
+
+    constructor(props: IProps) {
+        super(props);
+        this.state = {};
+    }
+
+    public render() {
+        const highlightColor = this.props.name === 'delete' ? 'orange' : menuItemHighlightColor;
+        const color = this.state.hoveredMenu ? highlightColor : menuItemNormalColor;
+        return <span id={this.props.name} key={this.props.name} onClick={this.props.action} onMouseEnter={this.onMouseOverFunction} onMouseLeave={this.onMouseLeaveFunction}
+                     style={{zIndex:50, backgroundColor:'white', padding:2, margin:2}}>
+                    <FontAwesomeIcon icon={this.props.icon} color={color}/>
+                </span>;
+    }
+
+    public onMouseOverFunction = () => {
+            this.setState({hoveredMenu : true});
+    }
+
+    public onMouseLeaveFunction = () => {
+        this.setState({hoveredMenu : null});
+    }
+
+}

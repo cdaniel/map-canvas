@@ -3,6 +3,8 @@ import {MapEditorDispatcher, TypedEvent} from '../dispatcher/MapEditorDispatcher
 import IMapState from "../types/MapState";
 
 
+
+
 export class NewNodeIntentEvent extends TypedEvent<any> {}
 export class LoadMapEvent extends TypedEvent<any> {};
 
@@ -33,4 +35,12 @@ export function initiateNodeDeletion(id:string){
 
 export function connectionInitiated(scope: any, sourceId: string | any, targetId: string) {
     MapEditorDispatcher.dispatch(new InitiateConnection({scope, sourceId, targetId}));
+}
+
+export function initiateConnectionDeletion() {
+    console.log('initiate');
+}
+
+export function initiateConnectionEdit() {
+    console.log('initiate');
 }

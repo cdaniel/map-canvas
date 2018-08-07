@@ -3,7 +3,9 @@ import * as React from 'react';
 // @ts-ignore
 import {Connection, ElementGroupRef, ElementRef, Endpoint, jsPlumbInstance} from "jsplumb";
 
+import * as ReactDOM from 'react-dom';
 import * as MapEditorActions from '../actions/MapEditorActions'
+import NodeConnectionMenu from "./NodeConnectionMenu";
 
 export interface IConnectionProps {
     focused:boolean,
@@ -14,6 +16,8 @@ export interface IConnectionProps {
     targetId: string,
     styler: (type:string) => string | any;
 }
+
+
 
 export default class NodeConnection extends React.Component<IConnectionProps, any> {
 
@@ -30,16 +34,41 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
         return null;
     }
 
+
+
+    public buildCustomMenuOverlay = (menu:any) => {
+        const menuItems = [];
+        for(const menuEntry of menu){
+            menuItems.push(<NodeConnectionMenu name={menuEntry[0]} key={menuEntry[0]} action={menuEntry[2]} icon={menuEntry[1]}/>);
+        }
+        const menuDiv = <div>{menuItems}</div>;
+        const root = document.createElement('div');
+        ReactDOM.render(menuDiv, root);
+        return root;
+    }
+
     public componentDidMount = () => {
         const computedStyle = this.props.styler(this.props.scope);
         const label = this.props.label || "&nbsp;";
+        const customOverlay = this.buildCustomMenuOverlay(computedStyle.menu);
         const params = {
             anchors : [computedStyle.sourceAnchors, computedStyle.targetAnchors],
             connector: computedStyle.connector,
 
             detachable : false,
             endpoints: [computedStyle.endpoint, computedStyle.endpoint],
-            overlays: [[ "Label", {labelStyle: {padding:1, font:'11px  sans-serif'}, label:label as string, id:'Label'}]],
+            overlays: [
+                [ "Label", {labelStyle: {padding:1, font:'11px  sans-serif'}, label:label as string, id:'Label'}],
+                [ "Custom", {
+                    create : (component : any) => {
+                        return customOverlay;
+                    },
+                    id: "menuOverlay",
+                    key: "menuOverlay",
+                    location: 0.5
+                }
+                ]
+            ],
             paintStyle : computedStyle.endpointStyle,
             scope: this.props.scope,
             source:this.props.sourceId,
@@ -76,7 +105,9 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
             this.state.connection.hideOverlay('Label');
             this.state.connection.addType('focused');
             this.state.connection.addType(this.props.scope + '-focused');
+            this.state.connection.showOverlay('menuOverlay');
         } else {
+            this.state.connection.hideOverlay('menuOverlay');
             this.state.connection.removeType('focused');
             this.state.connection.removeType(this.props.scope + '-focused');
             this.state.connection.showOverlay('Label');
@@ -91,6 +122,7 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
             return;
         }
         this.state.connection.hideOverlay('Label');
+        this.state.connection.hideOverlay('menuOverlay');
         this.jsPlumbInstance.deleteConnection(this.state.connection);
         this.setState({connection:null});
     }
@@ -105,7 +137,7 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
         if(obj.component && obj.id !== 'Label'){ // non label overlay clicked
             const connection = obj.component;
             console.log(connection);
-            // TODO: do what needs to be done by respective overlay
+            return
         }
         MapEditorActions.blurConnection(this.props.sourceId, this.props.targetId, this.props.scope);
     }
