@@ -62,12 +62,17 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
                 // first - clear node selection
                 this.state.focusedNodes = [];
                 this.state.jsPlumbInstance!.clearDragSelection();
-                // focus on a single node
-                this.state.focusedConnections.push({
+                // focus on a single connection
+                // this.state.focusedConnections.push({
+                //     scope: action.payload.scope,
+                //     sourceId : action.payload.sourceId,
+                //     targetId: action.payload.targetId
+                // });
+                this.state.focusedConnections = [{
                     scope: action.payload.scope,
                     sourceId : action.payload.sourceId,
                     targetId: action.payload.targetId
-                });
+                }];
                 this.emitChange();
             } else if (action instanceof BlurConnectionEvent) {
                 this.state.focusedConnections = this.state.focusedConnections.filter((connection)=>{

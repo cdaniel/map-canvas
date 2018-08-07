@@ -32,13 +32,14 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
 
     public componentDidMount = () => {
         const computedStyle = this.props.styler(this.props.scope);
+        const label = this.props.label || "&nbsp;";
         const params = {
             anchors : [computedStyle.sourceAnchors, computedStyle.targetAnchors],
             connector: computedStyle.connector,
 
             detachable : false,
             endpoints: [computedStyle.endpoint, computedStyle.endpoint],
-            overlays: [[ "Label", {labelStyle: {padding:1, font:'11px  sans-serif'}, label:"", id:'Label'}]],
+            overlays: [[ "Label", {labelStyle: {padding:1, font:'11px  sans-serif'}, label:label as string, id:'Label'}]],
             paintStyle : computedStyle.endpointStyle,
             scope: this.props.scope,
             source:this.props.sourceId,
@@ -68,34 +69,34 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
     }
 
     public componentDidUpdate = () => {
-        if(this.state.connection && this.props.label){
-            this.state.connection.getOverlay('Label').setLabel(this.props.label);
-        } else if (this.state.connection) {
-            this.state.connection.getOverlay('Label').setLabel("");
+        if(!this.state.connection){
+            return;
         }
-        console.log(this.props.focused);
         if(this.props.focused){
             this.state.connection.hideOverlay('Label');
             this.state.connection.addType('focused');
             this.state.connection.addType(this.props.scope + '-focused');
         } else {
-            this.state.connection.showOverlay('Label');
             this.state.connection.removeType('focused');
             this.state.connection.removeType(this.props.scope + '-focused');
-            console.log('show');
+            this.state.connection.showOverlay('Label');
+            this.state.connection.getOverlay('Label').setLabel(this.props.label || '&nbsp;');
         }
         this.jsPlumbInstance.revalidate(this.props.sourceId);
         this.jsPlumbInstance.revalidate(this.props.targetId);
     }
 
     public componentWillUnmount = () => {
-        // this.jsPlumbInstance.detach(this.state.connection);
+        if(!this.state.connection) {
+            return;
+        }
+        this.state.connection.hideOverlay('Label');
         this.jsPlumbInstance.deleteConnection(this.state.connection);
         this.setState({connection:null});
     }
 
     private clickHandler = (obj:any, e:any) => {
-        // e.preventDefault();
+        e.preventDefault();
         e.stopPropagation();
         if(!this.props.focused){
             MapEditorActions.focusConnection(this.props.sourceId, this.props.targetId, this.props.scope);
