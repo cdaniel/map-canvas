@@ -111,6 +111,9 @@ class MapEditorStore extends FluxStore<IMapEditorState> {
             height: 0,
             input: null,
             jsPlumbInstance : null,
+            mouseDrag:false,
+            mouseDragStart : null,
+            mouseDragStop: null,
             nodeDroppedOntoId:null,
             width: 0,
         }));

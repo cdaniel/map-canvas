@@ -23,7 +23,7 @@ export default class NodeConnectionMenu extends React.Component<IProps, any> {
     public render() {
         const highlightColor = this.props.name === 'delete' ? 'orange' : menuItemHighlightColor;
         const color = this.state.hoveredMenu ? highlightColor : menuItemNormalColor;
-        return <span id={this.props.name} key={this.props.name} onClick={this.clickWrapper()} onMouseEnter={this.onMouseOverFunction} onMouseLeave={this.onMouseLeaveFunction}
+        return <span id={this.props.name} key={this.props.name} onMouseDown={this.clickWrapper()} onMouseEnter={this.onMouseOverFunction} onMouseLeave={this.onMouseLeaveFunction}
                      style={{zIndex:50, backgroundColor:'white', padding:2, margin:2}}>
                     <FontAwesomeIcon icon={this.props.icon} color={color}/>
                 </span>;
@@ -41,7 +41,9 @@ export default class NodeConnectionMenu extends React.Component<IProps, any> {
         const sourceId = this.props.connection.sourceId;
         const targetId = this.props.connection.targetId;
         const scope = this.props.connection.scope;
-        return () => {
+        return (event:any) => {
+            event.preventDefault();
+            event.stopPropagation();
             this.props.action(sourceId, targetId, scope);
         }
     }

@@ -93,7 +93,7 @@ export default class NodeConnection extends React.Component<IConnectionProps, an
 
         this.setState({connection});
         // @ts-ignore
-        connection.bind('click', this.clickHandler);
+        connection.bind('mousedown', this.clickHandler);
 
     }
 

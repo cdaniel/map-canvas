@@ -14,9 +14,10 @@ import * as MapActions from "../actions/MapActions";
 import * as MapEditorActions from '../actions/MapEditorActions';
 import MapEditorStore from '../stores/MapEditorStore';
 
-import {SyntheticEvent} from "react";
+// import {SyntheticEvent} from "react";
 import Node from './Node';
 import NodeConnection from "./NodeConnection";
+import RubberBand from "./RubberBand";
 
 const axisSupport = {
     border: '1px dashed silver',
@@ -139,11 +140,6 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         this.state = MapEditorStore.getState();
     }
 
-    public onClickHandler = (event: SyntheticEvent) => {
-        MapEditorActions.blurAll();
-        event.preventDefault();
-        event.stopPropagation();
-    }
     public componentWillMount = () => {
         MapEditorStore.addChangeListener(this.onChange);
         MapStore.addChangeListener(this.onChange);
@@ -154,6 +150,15 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
     }
     public componentDidUpdate = () => {
         this.jsPlumbInstance.setSuspendDrawing(false, true);
+    }
+
+    public constructRubberBand = () => {
+        if(!this.state.mouseDrag){
+            return null;
+        } else {
+            return <RubberBand startPos={this.state.mouseDragStart as any} endPos={this.state.mouseDragStop as any}
+                               parentHeight={this.state.height} parentWidth={this.state.width}/>;
+        }
     }
 
     public render() {
@@ -181,11 +186,13 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
             connections = this.renderConnections(MapStore.getState().connections);
         }
 
+        const rubberBand = this.constructRubberBand();
+
         return (
-            <div style={{flex: '1 1 auto', minHeight: 500, minWidth: 600, position: 'relative'}}>
-                <div>
+            <div style={{flex: '1 1 auto', minHeight: 500, minWidth: 600, position: 'relative'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onMouseMove={this.mouseMove} >
+                <div >
                     <div style={realCanvasDivStyle}
-                         ref={input => this.setContainer(input)} onClick={this.onClickHandler}>
+                         ref={input => this.setContainer(input)} >
                         <ReactResizeDetector handleWidth={true} handleHeight={true} onResize={this.onResize}/>
                         {nodes}
                         {connections}
@@ -204,6 +211,7 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
                     <div style={axisSupport1}/>
                     <div style={axisSupport2}/>
                     <div style={axisSupport3}/>
+                    {rubberBand}
                 </div>
             </div>
         );
@@ -224,9 +232,45 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
         this.jsPlumbInstance.bind('connectionDragStop', this.connectionDragStopped);
         this.jsPlumbInstance.bind('beforeDrop', this.beforeDropListener);
     }
+
+    private  mouseDown = (event:any) => {
+        if(this.state.focusedNodes.length > 0){
+            MapEditorActions.blurAll();
+            return;
+        }
+        if(!this.state.mouseDrag){
+            event.persist();
+            this.setState({mouseDrag:true});
+            const y = event.nativeEvent.offsetY / this.state.height;
+            const x = event.nativeEvent.offsetX / this.state.width;
+            this.setState({mouseDragStart:{left: x, top:y},
+                mouseDragStop:{left: x, top:y}});
+        }
+    }
+
+    private  mouseUp = (event:any) => {
+        if(this.state.mouseDrag){
+            event.persist();
+            this.selectSelectedNodes();
+            this.setState({mouseDrag:false});
+        }
+        return true;
+    };
+
+    private  mouseMove = (event:any) => {
+        event.persist();
+        if(this.state.mouseDrag){
+            const y = event.nativeEvent.offsetY / this.state.height;
+            const x = event.nativeEvent.offsetX / this.state.width;
+            this.setState({
+                mouseDragStop:{left:x, top:y}});
+        }
+    };
+
     private connectionDragStarted = (event: any) => {
         MapEditorActions.scopeDragActivated(event.scope, event.sourceId);
     }
+
     private connectionDragStopped = (event: any) => {
         MapEditorActions.scopeDragDectivated(event.scope, event.targetId);
     }
@@ -256,6 +300,21 @@ export default class MapCanvas extends React.Component<IProps, MapEditorState> {
                               nodeDroppedOntoId={this.state.nodeDroppedOntoId}/>);
         }
         return result;
+    }
+
+    private selectSelectedNodes(){
+        MapEditorActions.blurAll();
+        if(this.state.mouseDrag){
+            for (const node of MapStore.getState().nodes) {
+                if(node.evolution > Math.min(this.state.mouseDragStart!.left, this.state.mouseDragStop!.left)
+                    && node.evolution < Math.max(this.state.mouseDragStart!.left, this.state.mouseDragStop!.left)
+                    && node.visibility > Math.min(this.state.mouseDragStart!.top, this.state.mouseDragStop!.top)
+                    && node.visibility < Math.max(this.state.mouseDragStart!.top, this.state.mouseDragStop!.top)
+                ) {
+                    MapEditorActions.addNodeToFocus(node.id);
+                }
+            }
+        }
     }
 
     private renderConnections(connections: any) {

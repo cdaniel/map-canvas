@@ -145,7 +145,7 @@ export default class Node extends React.Component<INodeProps, any> {
             }
         }
         return (
-            <div id={this.props.id} key={this.props.id} style={componentStyle} ref={this.storeNativeHandle} onClick={this.onClickHandler}>
+            <div id={this.props.id} key={this.props.id} style={componentStyle} ref={this.storeNativeHandle} onMouseDown={this.onMouseDown}>
                 {dragConnectionComponents}
                 {moveComponent}
                 {deleteComponent}
@@ -288,15 +288,15 @@ export default class Node extends React.Component<INodeProps, any> {
     }
 
 
-    public onClickHandler = (event : SyntheticEvent) => {
+    public onMouseDown = (event : SyntheticEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
         const isCommandOrCtrlPressed = (event.nativeEvent as any).metaKey || (event.nativeEvent as any).ctrlKey;
         if(!this.props.focused && !isCommandOrCtrlPressed){
             MapEditorActions.focusNode(this.props.id);
         } else if(!this.props.focused && isCommandOrCtrlPressed){
             MapEditorActions.addNodeToFocus(this.props.id);
         }
-        event.preventDefault();
-        event.stopPropagation();
         if(this.props.focused && this.state.hoveredMenu === 'dragMenuItem'){
             return;
         }
