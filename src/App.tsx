@@ -1,16 +1,14 @@
 import * as React from 'react';
 import './App.css';
 
-import Palette, {IPaletteComponents} from './components/Palette';
+import {IPaletteComponents, MapActions, MapCanvas, MapEditorStore, Palette} from 'map-canvas-components';
+
 import logo from './logo.svg';
 
 import { faEdit, faTrashAlt, faUser } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 import * as jsPlumb from "jsplumb";
-import MapCanvas from "./components/MapCanvas";
-
-import * as MapActions from "./actions/MapActions";
 
 const params: IPaletteComponents = [
     {
@@ -253,7 +251,7 @@ function nodeConnectionStyler(type:string){
 }
 
 const jsPlumbInstance = jsPlumb.jsPlumb.getInstance();
-import MapEditorStore from './stores/MapEditorStore';
+
 MapEditorStore.setJsPlumbInstance(jsPlumbInstance);
 
 jsPlumbInstance.registerConnectionType("focused", {
